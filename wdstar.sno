@@ -1,0 +1,24 @@
+*	WDSTAR.SNO
+*
+*	Convert wordstar files to ASCII by removing the high-order bit
+*	from all characters.
+*
+*	To run:
+*		SNOBOL4 WDSTAR <input.file >output.file
+*
+*	Set long record length to read a paragraph at a time.
+*	Trim trailing blanks.
+*
+	&TRIM = 1
+	INPUT(.INPUT,5,5000)
+	OUTPUT(.OUTPUT,6,5000)
+
+*	Get high and low order character sets.
+*
+	&ALPHABET LEN(128) . LOW LEN(128) . HIGH
+
+*	Do the conversion, and loop until end-of-file.
+*
+LOOP	OUTPUT = REPLACE(INPUT,HIGH,LOW)	:S(LOOP)
+
+END

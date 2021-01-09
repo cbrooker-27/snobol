@@ -1,0 +1,52 @@
+*	SMARTVOW.SNO
+*
+*	This is a smarter varient of the VOWELS.SNO program.  It will
+*	underline MULTIPLE occurrences of the target pattern.  See VOWELS.SNO
+*	for an explanation of the basic program.
+*
+*	Here, the pattern has been changed to two vowels separated by
+*	a consonent, as described in VOWELS.SNO.
+*
+
+	&TRIM	=	1
+	&ANCHOR	=	1
+
+	VOWEL	=	'AEIOUaeiou'
+
+*	Define target pattern
+*
+	TARGET	=	ANY(VOWEL) NOTANY(VOWEL " ,.-") ANY(VOWEL)
+
+*	Search pattern brackets the target with cursor operators.  I and J
+*	will be set to the subject positions on either side of the match.
+*	ARB is used to match (and later delete) the characters from the
+*	beginning of the string up to the TARGET.
+*
+	SEARCH	=	ARB @I TARGET @J
+
+*	Read a line of input, fail upon end-of-file.
+*
+READ	LINE	=	INPUT				:F(END)
+
+*	Save line for later display.  Initialize the underline string.
+*
+	SAVE	=	LINE
+	UNDER	=	""
+
+*	Search the line, removing everything up to and including
+*	the TARGET if found.  Fail if not found.
+*
+AGAIN	LINE	SEARCH	= ""				:F(DISPLAY)
+
+*	Build up the underlining string.
+*
+	UNDER	=	UNDER DUPL(" ",I) DUPL("-",J - I) :(AGAIN)
+
+*	When the pattern match fails, see if we've had any matches.
+*	The simplest test is to see if the underlining string is non-null.
+*	If so, display the saved line and the underlining.
+*
+DISPLAY	OUTPUT	=	DIFFER(UNDER) SAVE		:F(READ)
+	OUTPUT	=	UNDER				:(READ)
+
+END

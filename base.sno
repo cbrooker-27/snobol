@@ -1,0 +1,10 @@
+        base = ''
+        b1 = 'akjshg'
+        base = ('hesx' | 'dec') . b1
+        output = b1 "hello"
+        output = base
+        'hexadescimal' base :s(hello) f(goodbye)
+hello   output = 'hello' :(end1)
+goodbye output = 'goodbye'
+end1    output = 'end'
+end

@@ -1,0 +1,262 @@
+
+
+
+
+
+
+GENERIC TRANSLATOR VERSION 0.2
+
+For use with CATSPAW VANILLA SNOBOL4
+
+Copyright 1987 by Kevin G. Barkes Consulting Services. Non-commercial
+reproduction and distribution permitted.  All other rights reserved.
+
+Kevin G. Barkes Consulting Services
+4107 Overlook Street
+Library, PA 15129
+Fido 129/38 (SYS$OUTPUT BBS - 412-854-0511)
+
+This software is provided on an "as-is" basis; no expressed nor implied
+warranties are made.
+
+********************************************************************************
+
+HISTORY:
+
+This program was originally written, tested, and debugged (well, as much as it 
+is in its current state) in under two hours.
+
+An associate had given me a diskette containing a manuscript which he wanted to
+edit and prepare for transmission to his publisher.  The file was in "print
+image" format... nicely formatted, with margins, extra word spaces due to
+justification, and other conventions which are fine if the file is going to a
+line printer.  This file was going to a commercial typesetter, where the
+composition people wanted to see a plain ASCII file with no extra spaces,
+"standard" typesetting generic coding, and no surprises.
+
+I didn't feel like manually editing the file, and was tired of writing special
+programs for each relatively simple conversion which came along.  So I wrote
+GENTRAN, which is essentially a global search and replace utility, but which
+also contains some of the pattern matching capabilities of SNOBOL4.
+
+The program worked, and I eventually ported it to VAX SPITBOL where it is used
+in a commercial printing environment.  That version contains some extra
+niceties, is more thoroughly debugged, and runs (as SPITBOL is wont to do)
+like the proverbial bat.
+
+The original GENTRAN disappeared into the bowels of my hard disk, to resurface
+again when I promised Mark Emmer of Catspaw that I'd stick some useful SNOBOL4
+software in the files section of Catspaw's Bulletin Board.
+
+So, here it is, in its original, pristine, unstructured, and somewhat
+contorted form.  In a way, this program represents both the best and the worst
+of SNOBOL.
+
+I hope it provides a starting point from which you can develop your own
+utilities.  The program shows some of SNOBOL's fancy tricks, like user defined
+functions, tables, etc.  It also contains non-meaningful labels,
+perverted program flow, and other abominations.  In short, it's a
+good example of why programmers both love and hate the language.
+
+
+
+
+
+
+****************************************************************************
+
+GENTRAN is intended for use in text processing applications, specifically
+in preparing files for input into some type of typesetting or composition
+system which uses mnemonic coding (such as Datalogics' PAGER).  GENTRAN
+does global search and replace, line trimming, quote processing, and supports
+some basic pattern matching.
+
+
+1. INSTALLATION
+
+SNOBOL4 users should enter SNOBOL4 GENTRAN at the DOS prompt.
+
+2. INPUT/OUTPUT
+
+There are three file names which must be specified after running GENTRAN. The
+first is the name of the translation table input (.TTI) file.
+
+The .TTI file contains directives (special commands which affect the entire
+translation) as well as search and replace strings.
+
+.TTI is the default extension name for these files.  It is not necessary
+to enter the .TTI extension.  If the translation table file ends in any other
+extension, however, the full file spec must be given.  A translation table
+input file named TEST.TTI could be specified merely as "TEST". One named
+"TEST.TRA" would have to be entered as "TEST.TRA".
+
+You can also enter directives and search/replace strings interactively.  When
+prompted by the program for the .TTI filename, press ENTER.  You can now enter
+commands from the keyboard.  Press Control-Z, then ENTER, when you have
+completed entering commands. 
+
+The input file is the name of the source, or "raw" file.  The output file is
+where the result of the translation will be placed.  You can use the console
+keyboard (CON:) for both input and output, if you wish.  This is handy for
+debugging purposes when setting up a new .TTI file.
+
+3. DIRECTIVES
+
+Directives are GENTRAN commands which change the behavior of the software
+during translations.
+
+Directives can appear anywhere in the .TTI file.  Each directive must appear on
+a line by itself, with no other text on the line.  With one exception, all
+directives begin with a percent sign (%) followed by a word.  There is no
+space between the percent sign and the word. GENTRAN ignores blank lines in
+the .TTI file.
+
+The exception is the comment directive, the exclamation mark (!).  Lines
+containing an exlamation mark in the first position of the line are not
+processed.  This is useful for entering comments in the file.
+
+
+
+
+
+
+The other directives are:
+
+IMMEDIATE DIRECTIVES:
+
+(These directives are executed on all lines of the file, prior to search and
+replace and %QUOTE operations.)
+
+%TRIM           -- Trims trailing spaces from all lines (the default).
+
+%LTRIM          -- Trims leading spaces and tabs from all lines.
+
+%ATRIM          -- Trims both leading and trailing spaces from all lines.
+                   The same as entering:
+                   %TRIM
+                   %LTRIM
+                   in the .TTI file.
+
+%COMPRESS       -- Compresses multiple spaces and tabs from all lines.
+
+%COLLAPSE       -- Trims leading and trailing spaces and compresses multiple
+                   spaces and tabs from all lines.
+                   The same as entering:
+                   %TRIM                                %ATRIM
+                   %LTRIM               or              %COMPRESS
+                   %COMPRESS
+
+%TRACE          -- Displays the result of the translation to the terminal,
+                   in addition to writing the translation to the output
+                   file.
+
+
+DEFERRED DIRECTIVE
+
+This directive is executed following the immediate directives but before
+the search and replace strings:
+
+%QUOTE          -- Changes the double quote (") to open and close quotes.
+
+Once "turned on", directives cannot be "turned off."
+
+4.  SEARCH AND REPLACE STRINGS.
+
+After executing all directives, GENTRAN executes each search and replace
+statement in the .TTI file.
+
+GENTRAN is case sensitive.  "THIS" will not match "This" or "this".
+
+Strings are delimited by the backslash character (\).  Use quotes to enclose
+strings within the delimiters.
+
+If the search string contains quotes, use apostrophes to define strings:
+
+\'"HELLO"'\ \"hello"\ (changes case and strips quotes)
+
+
+
+
+
+
+\'"Marys' "'"\  \'"Mary' "'" 's"\  Translates "Marys'" to "Mary's"
+Note GENTRAN ignores spaces between quoted strings.
+
+\\ (null string) can be used to translate the search string to null.
+For example:
+
+\"green"\ \\
+
+will effectively strip all occurrences of the string "green" in the input
+file.
+
+The null string \\ cannot be used as a search string; an error will result.
+
+GENTRAN will not permit you to translate a string to itself.  The following
+will generate an error:
+
+\"string"\ \"string"\
+
+You can still get into an endless loop, though, by inopportune replacements,
+such as:
+
+\"."\ \".."\
+
+This will replace a single period with two periods. Since GENTRAN will
+always find a single period, it will loop through this search and replace
+line until you run out of memory or reach an internal SNOBOL limit.
+
+Be careful when entering search and replace strings.  Remember that GENTRAN
+goes through the strings one at a time, and that subsequent replacements
+can be affected by what occurred previously.  In the examples above showing
+how to search and replace quotes, bear in mind that if the %QUOTE directive
+had been specified, the replacement would have failed.
+
+That is, if %QUOTE were NOT enabled,
+\'"Marys' "'"\  \'"Mary' "'" 's"\ 
+
+would be successful.  If %QUOTE had been enabled, the strings would have
+to be:
+
+\"``Marys'''"\ \"``Mary's''"\
+
+6. PATTERNS
+
+GENTRAN recognizes legal SNOBOL function calls in the search & replace
+strings.  This vastly increases GENTRAN's power and flexibility.
+
+For example:
+
+\POS(0) "A"\ \DUPL(".",10)\
+
+will replace a capital A in the first position of the line to a string of
+10 periods.
+
+
+
+
+
+
+You can create temporary variables to rearrange data in the replacement.
+
+\("Mr. " | "Mrs. " | "Miss ") . TITLE BREAK(" ") . NAME)\*(NAME ", " TITLE)\
+
+will replace strings like "Mrs. Jones " with "Jones, Mrs. ".
+
+The search string is compiled by GENTRAN when the TTI file is first read.
+If the replacement string is a simple string (or concatenation of strings),
+it too is statically compiled when the TTI file is read.  The example above
+shows another case:  The replacement expression uses variables assigned during
+the pattern match.  These variables cannot be evaluated when the TTI file
+is read; they must be evaluated as each record of the input file is processed
+(if the search string is found in that record).  The user expresses this
+fact by placing the replacement expression in parenthesis, and preceeding it
+with SNOBOL4's "defered evaluation operator", the "*".
+
+(Hint:  If you try to use variables and functions in the replacement string,
+and omit the "*", you'll likely see the word "PATTERN" in your output.)
+
+Extreme care must taken when using SNOBOL functions to avoid endless looping
+or conflicts with reserved function or variable names.
+
+See the SAMPLE.TTI file in this distribution for an example of a .TTI file.

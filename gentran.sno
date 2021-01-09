@@ -1,0 +1,325 @@
+* GENTRAN.SNO		see GENTRAN.DOC for instructions
+*
+* Generic text translation utility for SNOBOL4.
+* Primarily intended for reformatting ASCII files for input to
+* text formatting or composition software systems.
+*
+* This is the rudimentary prototype of MASSAGE, a complete character trans-
+* lation utility which also features conditional logic, full I/O control,
+* translation sub-tables, and other capabilities.  Contact the author
+* for additional information.
+*
+* While this particular hunk of code is neither elegant nor particularly
+* efficient, it showcases the versatility of the SNOBOL4 language and
+* demonstrates the relative ease with which it is possible to develop
+* useful software in a short time frame.  It took under two hours to
+* write and debug (as it is, anyway).
+*
+* Copyright 1987 by Kevin G. Barkes Consulting Services
+* 4107 Overlook Street
+* Library, PA 15129
+* SYS$OUTPUT BBS (Fido 129/38) 412-854-0511
+*
+* Only non-commercial distribution of this software is permitted.
+* All other rights reserved.
+*
+* This software is provided "as-is", without either expressed or implied
+* warranties.
+*
+* EVAL of expressions moved outside of file copy loop.--Catspaw, Inc. 4/15/87
+* Minor cleanup for release with Vanilla SNOBOL4 -- Catspaw, Inc. 8/15/87
+*
+* Distributed with Vanilla SNOBOL4 by permission of the author.
+*
+
+	
+*	QUOTE function to adjust double quote marks to some combination
+*	of opening and closing single quote mark according to
+*	typographic conventions.  Transformations:
+*
+*	Left Margin "	--> ``
+*	Right Margin "	--> ''
+*		""	--> ' ''
+*		'"	--> ' ''
+*		"'	--> `` `
+*		Blank "	--> Blank ``
+*		" Blank --> '' Blank
+*		("	--> (``
+*		"(	--> ``(
+*		```	--> `` `
+*		'''	--> ' ''
+*		"	--> ''
+*
+*	QUOTE conversion is defaulted OFF.
+
+	DEFINE('QUOTE()')
+	Q_PAT1	= POS(0) '"'
+	Q_PAT2	= RTAB(1) . QTEMP '"'
+	Q_PAT3	= "'" '"'
+	Q_PAT4	= '"' "'"				:(QUOTE_END)
+*
+*	No point proceeding unless " appears somewhere in the record.
+QUOTE	RECORD '"'					:F(RETURN)
+*
+	RECORD Q_PAT1 = '``'
+	RECORD Q_PAT2 = QTEMP "''"
+*
+QT1	RECORD '""' = "' ''"				:S(QT1)
+QT2	RECORD Q_PAT3 = "' ''"				:S(QT2)
+QT3	RECORD Q_PAT4 = "`` `"				:S(QT3)
+QT4	RECORD ' "' = ' ``'				:S(QT4)
+QT5	RECORD '" ' = "'' "				:S(QT5)
+QT6	RECORD '("' = '(``'				:S(QT6)
+QT7	RECORD '"(' = '``('				:S(QT7)
+QT8	RECORD "```" = "`` `"				:S(QT8)
+QT9	RECORD "'''" = "' ''"				:S(QT9)
+QT10	RECORD '"' = "''"				:S(QT10)F(RETURN)
+QUOTE_END
+
+
+******* MAIN PROGRAM *********
+*
+	VERSION	= "V. 0.2"
+
+	&TRIM	= 1
+	REC_LEN	= 80
+
+	SEARCH	= ARRAY(100)
+	REPLACE	= ARRAY(100)
+
+	DIRECTIVES = TABLE()
+	DIRECTIVES['TRIM']	= "Y"
+	DIRECTIVES['LTRIM']	= "N"
+	DIRECTIVES['ATRIM']	= "N"
+	DIRECTIVES['COMPRESS']	= "N"
+	DIRECTIVES['COLLAPSE']	= "N"
+	DIRECTIVES['TRACE']	= "N"
+	DIRECTIVES['QUOTE']	= "N"
+
+	POSSIBLES = "%TRIM%LTRIM%ATRIM%TRACE%QUOTE%COMPRESS%COLLAPSE"
+
+	DELIMITER = '\'
+	BELL	= CHAR(7)
+
+	INCOUNT	= 0
+	ERRORS	= 0
+*
+*
+	INPUT(.USERIN,15,,"CON:")
+	SCREEN	= "Generic Translator, " VERSION
+	SCREEN	= "For use with Vanilla SNOBOL4"
+	SCREEN	= ""
+
+*
+*	Get name of translation file.
+*
+OPEN_TFILE
+	SCREEN	= "Name of Translation Table input file[.TTI]"
++		  " (<CR> = terminal): " CHAR(26)
+	TTI	= REPLACE(USERIN,&LCASE,&UCASE)
+*
+*	Use console if file omitted.  Default .TTI suffix if needed.
+*
+	TTI = IDENT(TTI,"") "CON:"			:S(DO_TFILE_OPEN)
+	TTI "."						:S(DO_TFILE_OPEN)
+	TTI = TTI ".TTI"
+
+DO_TFILE_OPEN
+	INPUT(.TFILE,16,,TTI)				:S(READ_TT_FILE)
+	SCREEN	= BELL
+	SCREEN	= "Cannot open " TTI "; try again..."
+	SCREEN	= ""					:(OPEN_TFILE)
+*
+*	Read translation file
+*
+READ_TT_FILE
+	SCREEN	= "Reading file: " TTI
+	IDENT(TTI,"CON:")				:F(PARSE_FILE)
+	SCREEN	= "Enter Control-Z when finished."
+*
+PARSE_FILE
+	PARSE	= TFILE					:F(PARSE_END)
+	PARSE POS(0) SPAN(" ") = ""
+	IDENT(PARSE,"")					:S(PARSE_FILE)
+	SCREEN	= "TTI line: " PARSE
+*
+*	Check for comment or directive
+*
+	PARSE POS(0) "!"				:S(PARSE_FILE)
+	PARSE POS(0) "%"				:F(PARSE_REPLACE)
+*
+*	Process directive.  Convert to upper case and see if legal
+*
+	PARSE	= REPLACE(PARSE,&LCASE,&UCASE)
+	POSSIBLES PARSE					:S(PF1)
+	SCREEN	= BELL
+	SCREEN	= "Error - Invalid Directive: " PARSE
+CNT_ERR	ERRORS	= ERRORS + 1
+	SCREEN	= "Press <ENTER> to continue..."
+	SCRATCH	= USERIN				:(PARSE_FILE)
+*
+*	Remove leading "%" and set directive true in table.
+*
+PF1	PARSE LEN(1) REM . PARSE
+	DIRECTIVES[PARSE] = "Y"				:(PARSE_FILE)
+*
+*	If not comment or directive, must be search and replace string.
+*	Count it and isolate search string.
+*
+PARSE_REPLACE
+	INCOUNT	= INCOUNT + 1
+	PARSE DELIMITER BREAK(DELIMITER) . SSTR		:S(PR_CONT)
+PR_2	SCREEN	= BELL
+	SCREEN	= "Error parsing translation line: " PARSE
+	SCREEN	= "Required delimiter pair (" DELIMITER ") not found."
+	INCOUNT	= INCOUNT - 1				:(CNT_ERR)
+*
+*	Compile the search string.  This will much more efficient
+*	during the search and replace phase if it is a true pattern.
+*
+PR_CONT
+	IDENT(SSTR,"")					:S(PR_1)
+	SEARCH[INCOUNT] = EVAL(SSTR)			:S(PR_CONT_1)
+	SCREEN	= BELL
+	SCREEN	= "Search string contains SNOBOL4 syntax error: " SSTR
+	INCOUNT	= INCOUNT - 1				:(CNT_ERR)
+*
+*	Now find the replacement string
+*
+PR_CONT_1
+	PARSE (DELIMITER SSTR DELIMITER)
++	     ARB DELIMITER BREAK(DELIMITER) . RSTR	:F(PR_2)
+*
+*	Error if search and replace strings are the same
+*
+	IDENT(SSTR,RSTR)				:F(PR_CONT_2)
+	SCREEN	= BELL
+	SCREEN	= "Search and replace strings cannot be identical: " SSTR
+	INCOUNT	= INCOUNT - 1				:(CNT_ERR)
+*
+*	Compile the replacement string.  This will usually result in
+*	a pure string (for simple replacements).  It will result in
+*	an EXPRESSION if the replacement uses *(expression), where
+*	"expression" may use variables that are set during the
+*	string search.
+*
+PR_CONT_2
+	REPLACE[INCOUNT] = EVAL(RSTR)			:S(PARSE_FILE)
+	SCREEN	= BELL
+	SCREEN	= "Replace string contains SNOBOL4 syntax error: " RSTR
+	INCOUNT	= INCOUNT - 1				:(CNT_ERR)
+*
+*	Error message for null search string.
+*
+PR_1
+	SCREEN	= BELL
+	SCREEN	= "No search string found in " PARSE
+	INCOUNT	= INCOUNT - 1				:(CNT_ERR)
+*
+*	Here at end of TTI file.  Check for errors.
+*
+PARSE_END
+	EQ(ERRORS,0)					:S(DO_STARTUP)
+	SCREEN	= BELL
+	SCREEN	= "Errors in translation file: " ERRORS
+	SCREEN	= "Correct or remove erroneous lines and rerun."
+	SCREEN	= ""					:(END)
+
+******* Start of file translation *******
+*
+DO_STARTUP
+*
+*	COLLAPSE implies ATRIM and COMPRESS.
+*
+	DIRECTIVES['ATRIM']    = IDENT(DIRECTIVES['COLLAPSE'],'Y') 'Y'
+	DIRECTIVES['COMPRESS'] = IDENT(DIRECTIVES['COLLAPSE'],'Y') 'Y'
+*
+*	ATRIM implies LTRIM and TRIM.
+*
+	DIRECTIVES['LTRIM']    = IDENT(DIRECTIVES['ATRIM'],'Y') 'Y'
+	DIRECTIVES['TRIM']     = IDENT(DIRECTIVES['ATRIM'],'Y') 'Y'
+
+	&TRIM = IDENT(DIRECTIVES['TRIM'],"N") 0
+
+	LTRIM_PAT = ""
+	LTRIM_PAT = IDENT(DIRECTIVES['LTRIM'],"Y")
++			POS(0) SPAN(" " CHAR(9)) REM . RECORD
+
+	COMPRESS_PAT = &ABORT
+	COMPRESS_PAT = IDENT(DIRECTIVES['COMPRESS'],"Y")
++			ANY(" " CHAR(9)) SPAN(" " CHAR(9))
+*
+*	Get I/O file names and open files
+*
+OPEN_INFILE
+	SCREEN	= ""
+	SCREEN	= "Name of file to be translated: " CHAR(26)
+	INFILE	= REPLACE(TRIM(USERIN),&LCASE,&UCASE)
+	IDENT(INFILE,"")				:S(OPEN_INFILE)
+	INPUT(.FILEIN,,REC_LEN,INFILE)			:S(OPEN_OUTFILE)
+	SCREEN	= BELL
+	SCREEN	= "Cannot open " INFILE "; try again..."
+	SCREEN	= ""					:(OPEN_INFILE)
+*
+OPEN_OUTFILE
+	SCREEN	= ""
+	SCREEN	= "Name of output file: " CHAR(26)
+	OUTFILE	= REPLACE(TRIM(USERIN),&LCASE,&UCASE)
+	IDENT(OUTFILE,"")				:S(OPEN_OUTFILE)
+	OUTPUT(.FILEOUT,,REC_LEN,OUTFILE)		:S(INIT_TCOUNT)
+	SCREEN	= BELL
+	SCREEN	= "Cannot open " OUTFILE "; try again..."
+	SCREEN	= ""					:(OPEN_OUTFILE)
+*
+******* MAIN LOOP FOR EACH RECORD *******
+*
+*	TCOUNT steps through the search and replace records.
+*
+INIT_TCOUNT
+	TCOUNT	= 0
+*
+*	Read record, trimming trailing blanks if necessary via &TRIM
+*
+	RECORD	= FILEIN				:F(DONE)
+*
+*	Perform leading trimming (or no-operation)
+*
+	RECORD LTRIM_PAT
+*
+*	Perform space and tab compression (or no-operation)
+*
+DT_B1	RECORD COMPRESS_PAT = " "			:S(DT_B1)
+*
+*	Perform quote conversion if requested
+*
+	IDENT(DIRECTIVES['QUOTE'],"Y") QUOTE()
+*
+*	Perform search and replace
+*
+DT_X	TCOUNT	= TCOUNT + 1
+	GT(TCOUNT,INCOUNT)			     :S(RECORD_DONE)
+*
+*	Get next search/replace pair.
+*	If replacement is an expression, handle separately.
+*
+	PATTERN	= SEARCH[TCOUNT]
+	REPL	= REPLACE[TCOUNT]
+	IDENT(DATATYPE(REPL),"EXPRESSION")		:S(DO_EXP)
+
+LOOPER	RECORD PATTERN = REPL				:S(LOOPER)F(DT_X)
+*
+DO_EXP	RECORD PATTERN = EVAL(REPL)			:S(DO_EXP)F(DT_X)
+*
+*	Here when all search/replaces have been applied to the record.
+*
+RECORD_DONE
+	FILEOUT	= RECORD
+	SCREEN	= IDENT(DIRECTIVES['TRACE'],"Y") RECORD	:(INIT_TCOUNT)
+*
+*	Fini
+*
+DONE
+	SCREEN	= ""
+	SCREEN	= BELL
+	SCREEN	= "Translation completed."
+END

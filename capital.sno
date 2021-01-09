@@ -1,0 +1,23 @@
+*	CAPITAL.SNO
+*
+*	Sample program from Chapter 7 of the Tutorial
+*
+*  Trim input, attach data file to variable INFILE
+	&TRIM = 1
+	INPUT('INFILE', 1, , 'CAPITAL.DAT')		:F(ERR)
+
+*  Read a line from file.  Start querying upon EOF
+READF	LINE = INFILE					:F(QUERY)
+
+*  Break out state and capital from line
+	LINE BREAK(',') . STATE LEN(1) REM . CAPITAL	:F(ERR)
+
+*  Convert state name into a variable, and assign the
+*  capital city string to it.  Then read next line.
+	$STATE = CAPITAL				:(READF)
+
+ERR	OUTPUT = 'Illegal data file'			:(END)
+
+*  Read state name, access it as a variable
+QUERY	OUTPUT = $INPUT					:S(QUERY)
+END

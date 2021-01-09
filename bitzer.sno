@@ -1,0 +1,254 @@
+* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+*
+*	PGM: BITZER.SNO
+*	Version 2.0
+*
+*	Created by:  Eric Johnson, Dean, College of Liberal Arts,
+*		     Dakota State University, Madison, SD.
+*	Date:        May - June, 1987
+*
+*	Version 2.1
+*	Modifed by Catspaw, Inc. for improved efficiency.
+*	SORT function added for Vanilla SNOBOL4
+*
+*	Version 2.2, December 11, 1989
+*	Corrected bug in PRINT function.
+*
+*	Description:  BITZER creates an alphabetical index for files,
+*		giving each page number a word is found on.
+*		It first reads the file identified as INWORDS; this provides
+*		a list of keywords NOT to be indexed.
+*		The file identified as INFILE is indexed.
+*		In this file, the start of each page must be
+*		indicated thus:
+*
+*	    A special character (@ # or *) should be in column 1,
+*		then "PAGE", one space, and the page designation.
+*		This can readily be altered by rewriting the pattern PAGE.DES.
+*
+*	    The output, the index, in found in the file
+*		identified as OUTFILE.
+*
+*	    BITZER adjusts output lines in which the listing of
+*	    of page numbers is > 57 columns, and it removes the last
+*	    comma.
+*
+*		The operation of this program is described in detail in 
+*		"A Computer Program for Word Processing," published in 
+*		RESEARCH IN WORD PROCESSING NEWSLETTER, Fall, 1987. 
+*
+*
+* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
+
+*	Part 1: Initialization
+*
+		&ANCHOR = 0
+		&TRIM = 1
+
+*	Define Constants and patterns
+*
+		NUMBERS = "0123456789"
+		LTRS = &UCASE  NUMBERS  "'-><"
+		SP = DUPL(" ",20)
+
+*	Define Patterns
+		PAGE.DES = POS(0) ANY("@*#") "PAGE" SPAN(" ")
++			   SPAN(NUMBERS) . PGNO
+
+		WPAT = POS(0) BREAK(LTRS) SPAN(LTRS) . WORD
+		WCHK = POS(0) BREAK(&UCASE)
+
+		INDEX = TABLE(100,100)
+
+*	Part 2: Function Definitions
+*
+*	Function to scroll a given number of lines.
+*
+	DEFINE('SCROLL(MAX)N')				:(SCROLL_END)
+SCROLL		SCREEN = LT(N,MAX)			:F(RETURN)
+		N = N + 1				:(SCROLL)
+SCROLL_END
+
+
+*	PRINT(COL1,COL2,L,BC)
+*
+*	Function to print a string COL2 in a column no longer than L
+*	characters, breaking words between the character in BC.
+*	COL1 is the first column of data.
+*
+	DEFINE('PRINT(COL1,COL2,L,BC)C,LINE')
+		PRINT_PAT = RTAB(1) . LINE LEN(1) . C	:(PRINT_END)
+
+*	Function entry point
+PRINT		OUTPUT = LE(SIZE(COL2),L) COL1 COL2	:S(RETURN)
+*	Remove first L characters to LINE.
+		COL2 LEN(L) . LINE =
+
+*	Isolate last character on line to C.
+PRINT_2		LINE PRINT_PAT				:F(RETURN)
+
+*	If C is not BC, prepend it to S and get another char from LINE.
+		COL2 = DIFFER(C,BC) C COL2		:S(PRINT_2)
+
+*	If C is BC, this is a good break point.
+		OUTPUT = COL1 LINE BC
+
+*	Replace COL1 with blanks so future lines will pad properly
+		COL1 = DUPL(' ',SIZE(COL1))		:(PRINT)
+PRINT_END
+
+
+*	This function sorts the members of a table using a Shell sort method.
+*	The general idea is to try to move out-of-order elements large
+*	distances quickly.  A straight-line insertion sort is performed on
+*	a series of sub-lists of the master list.  See Comm. of the ACM,
+*	July, 1959 for Shell's original article, or Knuth, The Art of
+*	Computer Programming, Vol. 3.
+*
+*	A table is converted to a two column array, with the first column
+*	containing the table keys, and the second column containing the
+*	entry values.
+*
+*	Sorting is not particularly efficient in SNOBOL4.  For that reason,
+*	SNOBOL4+ contains a built-in assembly-language SORT function, which
+*	should be used for production work.
+*
+*	The second argument to the function is either a 1 or 2, to specify
+*	sorting on the keys or the entry values, respectively.  It defaults
+*	to 1 if omitted.
+*
+*	The third argument is a string specifying the comparison function
+*	to be applied to table elements.  It defaults to 'LGT', the lexical
+*	compare function, which is suitable for strings.  'GT' could be used
+*	if the entries are numeric.
+*
+*	The result returned is the array created from the argument table.
+*	The function fails if the table could not be converted to an array.
+*
+*	From STRING AND LIST PROCESSING IN SNOBOL4 by Ralph E. Griswold,
+*			 by permission of the author.
+*	----------------------------------------------------------------
+*
+	DEFINE("SORT(TABLE,C,P)I,N,M,J,G,K,T1,T2")
+		ALEN	=	BREAK(",") . N		:(SORT_END)
+
+SORT		SORT	=	CONVERT(TABLE,"ARRAY")	:F(FRETURN)
+		C	=	IDENT(C) 1
+		P	=	IDENT(P) "LGT"
+		OPSYN("CMP",P)
+		PROTOTYPE(SORT)	ALEN
+		G	=	N
+
+SORTG		G	=	GT(G,1) G / 2		:F(RETURN)
+		M	=	N - G
+SORTK		K	=	0
+		I	=	1
+SORTJ		J	=	I + G
+		CMP(SORT[I,C],SORT[J,C])		:F(SORTI)
+		T1	=	SORT[I,1]
+		T2	=	SORT[I,2]
+		SORT[I,1]	=	SORT[J,1]
+		SORT[I,2]	=	SORT[J,2]
+		SORT[J,1]	=	T1
+		SORT[J,2]	=	T2
+		K	=	K + 1
+SORTI		I	=	LT(I,M) I + 1		:S(SORTJ)
+		GT(K,0)					:S(SORTK)F(SORTG)
+SORT_END
+
+*
+*	Part 3: Open files.
+*
+START		SCREEN = "Enter file to be indexed: " CHAR(26)
+		INFILE = INPUT				:F(END)
+		INPUT(.IDX_FILE,1,,INFILE)		:F(START)
+
+START_1		SCREEN = "Enter file of words to exclude from index,"
+		SCREEN = "or ENTER if no exclusion file: " CHAR(26)
+		INWORDS = INPUT				:F(END)
+		IDENT(INWORDS)				:S(START_2)
+		INPUT(.IN,2,,INWORDS)			:F(START_1)
+
+START_2		SCREEN = "Enter output file name: " CHAR(26)
+		OUTFILE = INPUT				:F(END)
+		OUTPUT(.OUTPUT,3,,OUTFILE)		:F(START_2)
+		
+
+*
+*	Part 4: Read in words not to be indexed if file provided.
+*
+		SCROLL(25)
+		SCREEN = SP "Bitzer is indexing the text."
+		SCREEN =
+		SCREEN = SP "Please do not interrupt."
+		SCROLL(10)
+
+*	Record in INDEX table with "#" as special marker.
+*
+		IDENT(INWORDS)				:S(READ)
+GETWDS		WORDS = REPLACE(IN,&LCASE,&UCASE)	:F(READ)
+GETW 		WORDS    WPAT  =			:F(GETWDS)
+		INDEX<WORD> = "#"			:(GETW)
+*
+*	Part 5:  Main Processing
+*
+READ		LINE = REPLACE(IDX_FILE,&LCASE,&UCASE)	:F(DO_SORT)
+
+*	Check for page number
+		LINE PAGE.DES				:F(NEXTW)
+		TESTP = " " PGNO ","			:(READ)
+
+*	Isolate word, see if want to keep it.
+NEXTW		LINE WPAT =				:F(READ)
+
+*	Should be at least one letter somewhere in the word, else ignore.
+		WORD  WCHK				:F(NEXTW)
+
+*	A pointer to the table entry is used, to avoid making multiple
+*	lookups in the table.  See if it is marked as "ignore."
+		WORD_PTR = .INDEX<WORD>
+		IDENT($WORD_PTR,"#")			:S(NEXTW)
+
+*	Error if word longer than 18 characters
+		LE(SIZE(WORD),18)			:S(TESTPG)
+		SCREEN = 'Word over 18 letters: "'
++			  WORD    '"; it is ignored.'
+		SCREEN =				:(NEXTW)
+
+
+*	See if already have an entry on this page for this word.
+TESTPG		$WORD_PTR  TESTP			:S(NEXTW)
+		$WORD_PTR = $WORD_PTR TESTP		:(NEXTW)
+
+*
+*	Part 6: Sort results
+*
+DO_SORT		SCROLL(25)
+		SCREEN = SP "Bitzer is alphabetizing the index."
+		SCREEN =
+		SCREEN = SP "Please do not interrupt."
+		SCROLL(10)
+		INDEX = SORT(INDEX)			:S(SORTED)
+		OUTPUT = 'THERE IS NOTHING IN TABLE!'	:(END)
+*
+*	Part 7: Print results
+*
+SORTED		OUTPUT = 'WORD                PAGE NUMBERS'
+		OUTPUT = ' '
+
+*	Print in columns.  Break long lines if necessary.  Remove trailing
+*	comma or "#" from entry.
+*
+PRINTW		S = S + 1
+		INDEX<S,2> RTAB(1) . C2			:F(LAST)
+		IDENT(C2)				:S(PRINTW)
+		PRINT(RPAD(INDEX<S,1>,19),C2,57,",")	:(PRINTW)
+
+LAST		SCROLL(25)
+		SCREEN = SP "Bitzer is finished."
+		SCREEN =
+		SCREEN = SP "An index of " INFILE  
+		SCREEN = DIFFER(INWORDS) SP "excluding the words in " INWORDS
+		SCREEN = SP "will be found in " OUTFILE
+		SCROLL(9)
+END

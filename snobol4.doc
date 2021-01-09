@@ -1,0 +1,821 @@
+
+
+
+
+
+                             MORE INFORMATION ON SNOBOL4
+
+            Vanilla SNOBOL4 may be as far as your interest in SNOBOL4 goes.
+          We've included a language tutorial manual on the disk so you can
+          learn how to program in SNOBOL4.  We've tried to make Vanilla
+          SNOBOL4 a useful entity in its own right -- something you can use
+          for file reformatting jobs and quick utilities.  That's fine --
+          we hope you like it and find it useful.
+
+            But someone once said that SNOBOL4 patterns were like potato
+          chips; it's hard to stop with just one.  If you find that's true,
+          you'll want to know about other materials related to the SNOBOL4
+          language.
+
+            This file, SNOBOL4.DOC, contains information on SNOBOL4 books
+          in print -- from beginner to advanced.  Because the richness of
+          the SNOBOL4 language provides so many different ways to attack a
+          problem, these books are especially useful -- every author seems
+          to bring a different perspective to the language.
+
+            We've also included descriptions of SNOBOL4+ and SPITBOL, our
+          professional SNOBOL4 products.  Their many extra features allow
+          you to tackle large problems, and SPITBOL runs 6 to 10 times
+          faster than SNOBOL4.  All include printed manuals.
+
+            There's also a section describing other products we manufacture
+          or distribute that are useful for non-numeric applications.
+
+            For the true SNOBOL4 addict, we've designed an outrageous,
+          6-color SNOBOL4 T-shirt to proclaim that you're an iconoclast who
+          knows how to solve problems quickly, easily and efficiently.
+          We've priced the shirts at a very reasonable $10.95 -- less 
+	  than a box of disks and far more attractive.  You might want 
+	  to order two in case your spouse or best friend makes off 
+	  with yours.
+
+            Finally, if any of this whets your appetite, there's an order
+          form with current prices and ordering information.
+
+                                 Welcome to SNOBOL4!
+
+
+            CATSPAW, INC.   P.O. BOX 1123   SALIDA, COLORADO 81201   USA
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+       SNOBOL4.DOC (V1.7)              - 1 -                 November 1, 1991
+
+
+
+                                  SNOBOL4 BOOKS...
+
+
+          Algorithms in SNOBOL4
+          ---------------------
+
+            James F. Gimpel.  Originally published in 1976; republished in
+          1986 by Catspaw. ISBN 0-939793-00-8, paper.  ISBN 0-939793-01-6,
+          hardcover.  500 pages.  A diskette with all the book's functions
+          and programs is available separately.
+
+            This is the famous "Orange Book" which provides powerful ways
+          to process text and strings with SNOBOL4.  It explains how to
+          process lists, convert files, format text, generate poetry, pro-
+          totype a compiler, and play poker -- and that's just a start.  No
+          matter what you do with SNOBOL4, you'll find functions and tech-
+          niques here that will not only save you time, but amaze you with
+          their ingenuity.
+
+            Gimpel writes functions so that they can be plugged into your
+          programs, which makes the diskette a valuable, and immediately
+          useful, addition to your programming library.
+
+            Chapters are: Preliminaries; Conversions; Basic String Func-
+          tions; Basic List Processing; Pattern Theory; Pattern Matching
+          Implementation; Pattern Construction; Input/Output; Paragraph
+          Formatting; Implementation and Timing; Permutations; Sorting;
+          Function Functions; Numbers; Stochastic Strings; Games; Assem-
+          blers, Compilers and Macros; Solution to Odd-Numbered Exercises;
+          Appendix; Index.
+
+
+          SNOBOL Programming for the Humanities
+          -------------------------------------
+
+            Susan Hockey.  Clarendon Press, Oxford, 1985.  ISBN 0-19-
+          824676-5, paperback.  178 pages.
+
+            When asked what is the best introductory text for people whose
+          background is in the humanities, rather than the computer sci-
+          ences, we recommend this one.  Hockey begins with a simple expla-
+          nation of SNOBOL4 syntax, and works through exercises with both
+          text and data files, progressing to concordances, frequency
+          counts, list processing, and data validation.  There are answers
+          in the back.
+
+
+          Computers in Linguistics
+          ------------------------
+
+            Christopher Butler.  Basil Blackwell Ltd., Oxford, 1985.  ISBN
+          0-631-14267, paperback.  270 pages.
+
+            Although the title is general, most of the book is specifically
+          devoted to SNOBOL4 and its use in literary and linguistic comput-
+          ing -- specialized indices, for instance, or semantic analysis.
+
+
+
+       SNOBOL4.DOC (V1.7)              - 2 -                 November 1, 1991
+
+
+
+            Butler provides a clear SNOBOL4 tutorial, aimed at non-program-
+          mers, so that the reader "should attain a level of competence
+          which will allow him to write programs for his own purposes, so
+          making him much less dependent on the availability of package
+          programs or under-employed professional programmers."
+
+            There are answers to the exercises, along with a comprehensive
+          bibliography, in this fine introductory text.  Note, though, that
+          it presumes an environment of mainframes and terminals, rather
+          than personal desktop machines.
+
+
+          A SNOBOL4 Primer
+          ----------------
+
+            Ralph and Madge Griswold.  Prentice-Hall, 1973.  ISBN 0-13-
+          815381-7, paperback.  192 pages.
+
+            A beginner's introduction to SNOBOL4 for readers with no pro-
+          gramming or technical background.  As a programming guide for
+          humanities researchers, it predates the books by Hockey and But-
+          ler by more than a decade.
+
+            Chapters cover an introduction to computers, the basics of
+          SNOBOL4, data types, pattern matching, user-defined functions,
+          arrays and tables, input/output, and programming techniques.  An
+          excellent chapter on debugging concludes the volume.  There are
+          numerous exercises (with solutions provided) and a comprehensive
+          glossary.
+
+            Use this volume to complete your SNOBOL4 collection, or to get
+          ideas for teaching SNOBOL4 to beginners.
+
+
+          The Programmer's Introduction to SNOBOL
+          ---------------------------------------
+
+            W. Douglas Maurer.  Elsevier, 1976.  ISBN 0-444-00172-7, paper-
+          back.  141 pages.
+
+            This book is for people who already program in other languages,
+          but want to enjoy programming by taking up SNOBOL4.  It's a slim
+          book, but covers a lot of territory, with exercises and answers
+          in the back.
+
+            Chapters cover elementary SNOBOL features, pattern-matching,
+          associative programming, pattern properties, advanced topics, and
+          systems programming.
+
+            You might know someone who's already competent with computers
+          and proficient in one or more other languages.  Your colleague is
+          always in a foul humor because he has to keep track of memory al-
+          location and variable types every time he writes a program.  This
+          book offers a good, and fast, way to get your colleague up and
+          running with SNOBOL4, thus improving the workplace environment.
+
+
+
+
+       SNOBOL4.DOC (V1.7)              - 3 -                 November 1, 1991
+
+
+
+          The SNOBOL4 Programming Language, 2nd Edition
+          ---------------------------------------------
+
+            R.E. Griswold, J.F. Poage, and I.P. Polonsky.  Prentice-Hall,
+          1971.  ISBN 0-13-815373-6, paperback.  256 pages.
+
+            This is the well-known "Green Book," and it is the standard
+          reference work on SNOBOL4.  Written by the creators of the lan-
+          guage, this book provides its definition.
+
+            The Green Book presumes that SNOBOL4 is running on a mainframe
+          in fashion 15 years ago, and thus it is somewhat dated, with ref-
+          erences to card punches and readers.
+
+            If that's where most of your experience lies, though, you may
+          be more comfortable with their approach, and their use of illus-
+          trated bead diagrams to explain pattern-matching: think of the
+          scanner as a needle, and the patterns as beads which may or may
+          not be in line to be threaded.
+
+            There are no practice exercises, but the authors present many
+          algorithms, as well as six sample programs.
+
+
+                   SNOBOL4+  --  THE PROFESSIONAL SNOBOL4 PACKAGE
+
+            SNOBOL4+ is Catspaw's professional version of the SNOBOL4 pro-
+          gramming language.  It offers many features not found in Vanilla
+          SNOBOL4.  The added features make your SNOBOL4 programs even more
+          concise and easy to write.  Here's a partial list:
+
+
+          Additional Features
+          -------------------
+
+          ASSEMBLY-LANGUAGE INTERFACE -- Create functions to extend func-
+          tionality beyond the SNOBOL4 environment.  You can write hardware
+          specific functions, interfaces to other software, or perform op-
+          erations that are awkward or inefficient in SNOBOL4.
+
+          INCLUDED FILES -- Provides the inclusion of other source code
+          files into a program being compiled.  Include files may be
+          nested, simplifying the use of source code libraries.
+
+          LARGE MEMORY -- Provides 300K bytes for user program and data
+
+          ENHANCED PATTERN MATCHING -- You can "back up" during a pattern
+          match with a negative argument to the LEN function, while TAB and
+          RTAB allow you to position to the left of the current cursor
+          position.  A MARB pattern provides a "maximum ARB" capability.
+
+          SYMBOLIC DEBUGGER -- A SNOBOL4 program that may be included with
+          the program to be debugged.  It provides tracing, breakpoints,
+          variable inspection and modification, and viewing of program
+          source lines.
+
+
+
+
+       SNOBOL4.DOC (V1.7)              - 4 -                 November 1, 1991
+
+
+
+          Additional Functions
+          --------------------
+
+          BACKSPACE() -- Backs up a file one record
+
+          BREAKX() -- Provides a more flexible BREAK pattern
+
+          ENVIRONMENT() -- Look up strings from MS-DOS environment block
+
+          EXECUTE() -- Execute MS-DOS commands and other programs from
+          within a SNOBOL4 program
+
+          LEQ, LNE, LLE, LGE, LLT -- Extends the LGT lexical comparison
+          function
+
+          LOAD() -- Loads external, assembly-language functions
+
+          PATHNAME() -- Retrieve file name from unit number
+
+          REVERSE() -- Reverse a string
+
+          REWIND() -- Rewinds a file to its beginning
+
+          SUBSTR() -- Extract substring from string
+
+          SAVE() -- Checkpoints state of system to a file for later
+          restoration, or distribution with run-time module
+
+          SEEK(), TELL(), TRUNCATE() -- Support for random-access files
+
+          SETBREAK() -- Provides user control of Control-C key
+
+          SORT(), RSORT() -- Built-in Shell sort for tables and arrays
+
+
+          Enhanced I/O
+          ------------
+
+          BINARY I/O -- Raw file I/O without interpretation of ASCII con-
+          trol characters.  Provides the greatest control of file contents.
+
+          RANDOM-ACCESS -- Update existing files by opening them for both
+          reading and writing, with old contents preserved
+
+          UNIX(tm) I/O -- Read or write Unix formatted records
+
+
+          Real Number Support
+          -------------------
+
+          REALS -- 64-bit precision providing 15 decimal digit accuracy.
+          New keywords to control the precision and format of real numbers.
+
+          80(2)87 SUPPORT -- Uses numeric co-processor if available, other-
+          wise a built-in software emulator is substituted automatically.
+
+          INFINITY and NAN -- Support for infinity and NAN (Not-A-Number)
+
+
+       SNOBOL4.DOC (V1.7)              - 5 -                 November 1, 1991
+
+
+
+          if produced by calculations.
+
+          LN and EXP -- Built-in Logarithm and Exponential function.
+
+
+          New Command Line Options
+          ------------------------
+
+          INTEGER OVERFLOW -- Provides automatic conversion from integer to
+          real if an arithmetic operation produces integer overflow.
+
+          MEMORY SIZE -- Adjust SNOBOL4+'s memory usage
+
+          NO-FAIL MODE -- Diagnosis undetected statement failure
+
+          SAVE FILE -- Write SAVE file after compilation.  This binary ob-
+          ject file may be distributed with Catspaw's runtime module.
+
+          STACK SIZE -- Adjust SNOBOL4+'s stack usage
+
+
+          Additional Operators
+          --------------------
+
+          LIST SELECTION -- Provides a list of expressions that are evalu-
+          ated sequentially until one succeeds; it then becomes the value
+          of the list.  This provides an If-Then-Else control structure in
+          convenient expression form.  For example:
+             OUT = "N is " (GT(N,0) "POSITIVE", EQ(N,0) "ZERO", "NEGATIVE")
+
+          MULTIPLE ASSIGNS -- Permits multiple assignments within a state-
+          ment, as in:  RESULT = A[I = I + 1] = A[I] * 5
+
+          PATTERN MATCH -- The binary question mark operator designates
+          pattern matching.  It permits pattern matches to be used within
+          an expression, for example: X = (SUB1 ? PAT1) (SUB2 ? PAT2) + 1
+
+
+          Program Library
+          ---------------
+
+            SNOBOL4+ is accompanied by over 70 files of sample programs and
+          functions provide examples in the areas of text processing, pars-
+          ing, artificial intelligence (including ELIZA), symbolic mathe-
+          matics, cryptography, and data structures.
+
+            Reading these fascinating programs will open your eyes to the
+          true expressive power of the language.
+
+
+          Full Documentation
+          ------------------
+
+            Our professional package includes a 240-page printed manual
+          (with index) with tutorial and thorough reference manual.  All
+          features and functions of SNOBOL4+ are discussed, including the
+          assembly language interface.
+
+
+       SNOBOL4.DOC (V1.7)              - 6 -                 November 1, 1991
+
+
+
+                       SPITBOL -- THE HIGH PERFORMANCE SNOBOL4
+
+            With minor exceptions, SPITBOL (SPeedy ImplemenTation of
+          snoBOL) is upward compatible with SNOBOL4.  The limitations are
+          minor: standard system functions and operators may not be rede-
+          fined with OPSYN, and Quickscan heuristics have been eliminated.
+          Internally, these limitations are turned to advantage, because
+          when combined with very clever system coding, the result is exe-
+          cution times that must be experienced to be believed.  When run
+          on the same 80386 platform, SPITBOL is typically 6 to 10 *times*
+	  faster than SNOBOL4+.
+
+            Under license from Prof. Robert B.K. Dewar, SPITBOL's creator,
+          and in cooperation with Robert Goldberg (Vax and PDP-11 SPITBOL),
+          Catspaw has produced versions of Macro SPITBOL for many different
+          hardware platforms.
+
+
+          SPITBOL-68K for the Motorola 680x0 Family
+          -----------------------------------------
+
+            SPITBOL-68K is available for 680x0 machines running the Unix
+          operating system, including the Sun 2 and Sun 3, Apollo Domain,
+          NCR Tower 32, Convergent S series, AT&T 7300/3B1 (Unix PC), HP
+          350, WICAT, and UNISYS 5000.
+
+            SPITBOL-68K is compatible with virtual memory.  We've scanned
+          strings of 1,500,000 characters on a machine with only 1 megabyte
+          of RAM (albeit somewhat slowly because of disk swapping).
+
+
+          MaxSPITBOL for the Apple Macintosh
+          ----------------------------------
+
+            MaxSPITBOL integrates SPITBOL with the Macintosh windowed
+          editor environment.  It runs on the Mac Plus, SE, and Mac II, or
+          earlier systems that have been upgraded from the old 64K ROMS.
+          400K of available RAM memory is required, but MaxSPITBOL will use
+          all you provide.  It is MultiFinder friendly, and happily
+          backgrounds while you perform other work.  Includes tutorial,
+          reference manual, and many sample programs.  Requires System
+	  level 6.01 or higher.  MaxSPITBOL is 32-bit clean and System 7
+	  compatible.
+
+
+          SPITBOL-386 for MS-DOS
+          ----------------------
+
+            This is a native-mode, 32-bit SPITBOL for 80386 systems under
+          MS-DOS incorporating a DOS extender.  Use all the memory on your
+          386 system for SPITBOL programs and data.  Have 32 megabytes of
+          RAM?  Now you can use it all. Includes tutorial, reference manual,
+	  and sample programs.
+
+	    Two versions are included: One uses a DOS Extender from 
+	  PharLap Software suitable for native DOS, extended or expanded 
+	  memory and VCPI-compliant hosts such as DESQview 386.  The second 
+
+
+       SNOBOL4.DOC (V1.7)              - 7 -                 November 1, 1991
+
+
+
+
+	  version uses a DOS Extender from Intel Corp., and works in native 
+	  DOS, extended memory, and with DPMI hosts such as Windows 386 
+	  Enhanced mode.  The Intel-extended version of SPITBOL is capable 
+	  of producing stand-alone, royalty-free executable files, and can 
+	  even run programs larger than memory, because a virtual memory 
+	  manager is included.
+
+
+	  SPITBOL-386 for OS/2 2.0
+	  ------------------------
+
+            This is a native-mode, 32-bit SPITBOL for 80386 systems under
+          IBM's OS/2 version 2.0.  It generates stand-alone, royalty-free
+	  executables, and can load DLLs (Dynamic Link Libraries) as 
+	  external SNOBOL4 functions.
+	  
+	  
+	  SPARC SPITBOL
+	  -------------
+
+            Our first port to a RISC architecture, SPITBOL for the
+          SparcStation and Sun 4's really screams.  Our benchmarks show
+          SPITBOL on a SparcStation 1 to be more than twice as fast as
+          SPITBOL on a 25 Mhz 80386.  Like our other Unix products,
+          SparcSPITBOL produces stand-alone, royalty-free load modules
+          (a.out files).
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+       SNOBOL4.DOC (V1.7)              - 8 -                 November 1, 1991
+
+
+
+                                SNOBOL4-RELATED ITEMS
+
+
+          The Rebus Programming Language
+          ------------------------------
+
+            Rebus is a language that provides modern control structures for
+          SNOBOL4 and SPITBOL.  It combines features of Icon and SNOBOL4,
+          giving you some of the control structures and syntax of Icon with
+          the pattern-matching power of SNOBOL4.  Rebus is actually a
+          preprocessor that accepts Rebus code and outputs SNOBOL4 code,
+          which in turn runs under SNOBOL4+ or SPITBOL.  With some
+          restrictions, it will even run with Vanilla SNOBOL4.
+
+            Catspaw offers an MS-DOS diskette that contains the Rebus
+          preprocessor and documentation.  It is still in its experimental
+          stages, so this is not a polished product.  Since Rebus produces
+          SNOBOL4 code, you must have one of the SNOBOL4 or SPITBOL systems
+          to use Rebus.  By way of example, here's the standard word
+          frequency program in Rebus:
+
+               function main()
+                    letter := &lcase || &ucase
+                    wpat := break(letter) & span(letter) . word
+                    count := table()
+                    while text := input do
+                         while text ?- wpat do
+                              count[word] +:= 1
+                    if result := sort(count) then {
+                         output := "Word counts"
+                         I := 0
+                         Repeat output := result[i +:= 1,1] || " - "
+                                   || result[i,2]
+                         }
+                    else output := "There are no words."
+               end
+
+
+          Btrieve(tm) Database System Interface
+          -------------------------------------
+
+            The standard for file management on MS-DOS machines is Btrieve
+          from Novell.  Btrieve has been integrated with several other
+	  programming languages, and Catspaw offers an interface to SNOBOL4+.
+
+            Our package allows you to call Btrieve functions from inside a
+          SNOBOL4+ program.  Btrieve specializes in finding and updating
+          database records (fixed and variable length) in a hurry with its
+          tree file structure and indexing system.  You can use Btrieve to
+          fetch the data you want, and SNOBOL4+ to work with it.
+
+            Note that the interface does not include Btrieve, which must
+          be purchased separately.
+
+
+
+
+
+
+       SNOBOL4.DOC (V1.7)              - 9 -                 November 1, 1991
+
+
+
+          Artificial Intelligence in SNOBOL4
+          ----------------------------------
+
+            SNOBOL4's backtrack searching, recursive abilities, and first-
+          class data objects make it suitable for AI applications.  In
+          fact, it is easy to implement LISP in SNOBOL4.
+
+            We've taken a superb, but difficult to obtain report -- Michael
+          Shafto's "Artificial Intelligence Programming in SNOBOL4" -- and
+          placed it on diskette.  We've also included all of Shafto's
+          demonstration programs and his SNOLISPIST function library .
+          These list processing functions, written in SNOBOL4, simplify the
+          task of converting LISP programs into SNOBOL4.
+
+
+                            THE ICON PROGRAMMING LANGUAGE
+
+
+          ProIcon for the Apple Macintosh
+          -------------------------------
+
+            Icon is a high-level programming language with extensive facil-
+          ities for processing strings and lists.  Icon has several novel
+          features, including expressions that may produce sequences of
+          results, goal-directed evaluation that automatically searches for
+          a successful result, and string scanning that allows operations
+          on strings to be formulated at a high conceptual level.
+
+            Icon emphasizes a design philosophy that allows ease of pro-
+          gramming and short, concise programs.  Storage allocation and
+          garbage collection are automatic, and there are few restrictions
+          on the sizes of objects.  Strings, lists, sets, and other struc-
+          tures are created during program execution and their size does
+          not need to be known when a program is written.  Values are con-
+          verted to expected types automatically; for example, numeral
+          strings read in as input can be used in numerical computations
+          without explicit conversion.
+
+            Examples of the kinds of problems for which Icon is well suited
+          are: text analysis, editing, and formatting, document prepara-
+          tion, symbolic mathematics, text generation, parsing and transla-
+          tion, data laundry, graph manipulation, expert systems, artifi-
+          cial intelligence applications, and rapid prototyping.
+
+            ProIcon, an enhanced implementation of Icon for the Apple
+          Macintosh, was developed jointly by Catspaw, Inc. and the Bright
+          Forest Company.
+
+
+
+
+
+
+
+
+
+
+
+
+       SNOBOL4.DOC (V1.7)              - 10 -                November 1, 1991
+
+
+
+                                ORDERING INFORMATION
+
+          Legend:
+            #  Diskette(s) only.  Documentation is present on the disk.
+
+            *  Shipping charges apply.  See instructions below.
+
+          ***** SOFTWARE *****
+          [ ] SNOBOL4+ for MS-DOS, with 240-page tutorial and
+              reference manual, 70 files of programs *       $125.00  ______
+
+              68K-Spitbol for Unix operating system (specify):
+          [ ] For single-user workstations *               $1,000.00  ______
+          [ ] For central-file servers *                   $2,000.00  ______
+
+          [ ] SPITBOL-386 (MS-DOS) includes DOS-Extender *   $295.00  ______
+
+          [ ] SPITBOL-386 (OS/2 2.0) *                       $295.00  ______
+
+          [ ] MaxSPITBOL (Apple Macintosh) *                 $195.00  ______
+
+              Sparc, Sun 4 SPITBOL (specify):
+          [ ] For SparcStation 1 *                           $695.00  ______
+          [ ] For single-user Sun 4 workstations *         $1,000.00  ______
+          [ ] For central-file Sun 4 servers *             $2,000.00  ______
+
+          [ ] ProIcon (Apple Macintosh) *                    $175.00  ______
+
+          [ ] Rebus language diskette, MS-DOS only #          $15.00  ______
+
+          [ ] Btrieve/SNOBOL4+ interface *                    $50.00  ______
+
+          [ ] SNOBOL4 T-shirts, outrageous 6-color, 100% cotton,
+              S(34-36), M(38-40), L(42-44), XL(46-48) *       $10.95  ______
+
+              Program diskette for "Algorithms in SNOBOL4."
+              See listing under "Books."
+
+          ***** BOOKS *****
+              "Algorithms in SNOBOL4," Gimpel, 500 pages.
+          [ ]    Paper *                                      $29.95  ______
+          [ ]    Hardcover *                                  $39.95  ______
+          [ ]    Program diskette #                           $15.00  ______
+
+          [ ] "Computers in Linguistics," Butler, paper,
+              270 pages *.                                    $21.95  ______
+
+          [ ] "SNOBOL Programming for the Humanities," Hockey,
+              paper, 178 pages *.                             $24.95  ______
+
+          [ ] "SNOBOL4 Programming Language," Griswold, Poage,
+              Polonsky, paper, 256 pages *.                   $33.40  ______
+
+          [ ] "The Programmer's Introduction to SNOBOL,"
+              Maurer, paper, 141 pages *.                     $31.75  ______
+
+
+
+
+       SNOBOL4.DOC (V1.7)              - 11 -                November 1, 1991
+
+
+
+          [ ] "A SNOBOL Primer," Griswold & Griswold,
+              paper, 192 pages *.                             $33.00  ------
+
+          [ ] "Artificial Intelligence Programming in SNOBOL4,"
+              Shafto, 162 pages + programs, on diskette. #    $15.00  ______
+
+          [ ] "The Macro Implementation of SNOBOL4," Griswold,
+	      cloth, 324 pages, limited number of copies,
+	      some have scuff marks on the cover *.           $50.00  ______
+
+          [ ] "The ICON Programming Language," Griswold &
+               Griswold, 2nd ed., paper, 368 pages *.         $35.80  ______
+
+          [ ] "The Implementation of the ICON Programming Language,"
+              Griswold & Griswold, hardcover, 336 pages *.    $50.00  ______
+
+
+          SHIPPING and HANDLING
+
+            Shipping charges are based upon the number of books and book-
+          like items (shown with *) purchased, subject to an overall mini-
+          mum charge, to take care of diskette-only purchases.  Foreign
+          shipments are sent by insured Air Parcel Post, registered Air
+          Small Packet, or registered First Class Airmail.
+
+                            | First Item    Each additional     Minimum
+            Destination     |   with *           * item     shipping charge
+          ------------------+----------------------------------------------
+           Continental US   |                                             |
+            (UPS ground)    |   $4.00            $1.00            $1.50   |
+          (UPS 2nd Day Air) |   $7.50            $3.50            $5.00   |
+          ------------------+---------------------------------------------|
+          Alaska, Hawaii,   |                                             |
+            Puerto Rico     |   $6.00            $2.00            $1.50   |
+          (1st class mail)  |                                             |
+          ------------------+---------------------------------------------|
+           Canada, Mexico   |  $10.00            $2.00            $2.00   |
+          ------------------+---------------------------------------------|
+           France, Japan    |  $40.00            $7.00            $5.00   |
+          ------------------+---------------------------------------------|
+          Australia, N.Z.,  |  $35.00            $5.00            $5.00   |
+          South America,Far |                                             |
+          East (exc. Japan) |                                             |
+          -----------------------------------------------------------------
+          UK, Europe (exc.  |                                             |
+            France), all    |  $30.00            $5.00            $5.00   |
+          other countries   |                                             |
+          ------------------+---------------------------------------------|
+
+          PRICES
+
+            Publishers regularly raise the price of the books we stock,
+          typically 5-10% every 6 months.  We try to hold the line on items
+          we produce.  So the usual caveat applies:  Prices subject to
+          change without notice.  Prices on this price list are guaranteed
+	  through December 31, 1991 only.  If ordering after this date,
+	  please contact Catspaw for current price information.
+
+
+       SNOBOL4.DOC (V1.7)              - 12 -                November 1, 1991
+
+
+
+          PAYMENT
+
+            Payment may be by check, money order, MasterCharge, Visa or
+          American Express credit cards.  Checks and money orders MUST be
+          in U.S. funds drawn on a U.S. bank; neither we nor any nearby
+          financial institutions are equipped to process international
+          currency transactions (checks MUST have US Federal Reserve coding
+          numbers--in the past it has cost us $25-$40 to cash a check
+          lacking these numbers, and we no longer can do that).  Non-U.S.
+          customers will find credit cards or international postal money
+	  orders to be the simplest method of transferring funds.
+
+
+          TO ORDER
+
+            To order direct, or for additional information, call
+	  719-539-3884 (9 a.m. - 5 pm, Mountain Time, GMT - 7 hours,
+          Monday - Friday), or FAX 719-539-4830.  Or complete this form
+	  and mail to:
+
+                                    Catspaw, Inc.
+                                    P.O. Box 1123
+                               Salida, Colorado 81201
+                                       U.S.A.
+
+                              Subtotal for desired items:  _________
+
+                     Colorado residents add 3% state tax:  _________
+
+                                                Shipping:  _________
+          (Domestic U.S. specify UPS ground or 2 day air)
+                                   Total Amount Enclosed:  _________
+
+
+
+          Name _______________________________________Title _______________
+          Address _________________________________________________________
+                  _________________________________________________________
+          City _______________________________________State _______________
+          Zip _____________Phone(   )_________________(Country)____________
+
+          Specify media: [ ] 5-1/4" MS-DOS      [ ] 3-1/2" MS-DOS
+                         [ ] 3-1/2" Macintosh   [ ] 3-1/2" Sparc
+                         [ ] cartridge tape
+
+          Payment:  [ ] Check or Money Order    [ ] American Express
+                    [ ] MasterCard (Eurocard)   [ ] Visa
+
+                          __ __ __ __ __ __ __ __ __ __ __ __ __ __ __ __
+          Account Number |__|__|__|__|__|__|__|__|__|__|__|__|__|__|__|__|
+
+          Signature _______________________________Exp. Date____________
+
+
+
+
+
+
+
+       SNOBOL4.DOC (V1.7)              - 13 -                November 1, 1991

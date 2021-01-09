@@ -1,0 +1,338 @@
+* VINSIDE.SNO
+* Produces an industry insider report,
+*   thus saving the cost and nuisance of reading
+*   Infoworld, PC Week, Microbytes, John Dvorak, etc.
+*
+* Written by Ed Quillen, Editor of "A SNOBOL's Chance."
+*
+* modified for Vanilla SNOBOL4 10/87 Dan Haney
+*
+* note: program size is very close to maximum for Vsnobol4
+*	and will not tolerate much modification/addition.
+*	Random number generation is highly textured because
+*	of integer limit of 32767.
+*
+* to run: SNOBOL4 VINSIDE
+*
+
+* Set keywords
+
+	&trim = 1
+	&anchor = 1
+	&maxlngth = 5000
+
+* Define your arrays
+
+* Blueboy is the I B M whatever
+
+	blueboy = array('10')
+	blueboy[1] = 'official'
+	blueboy[2] = 'executive'
+	blueboy[3] = 'vice-president'
+	blueboy[4] = 'officer'
+	blueboy[5] = 'manager'
+	blueboy[6] = 'source'
+	blueboy[7] = 'consultant'
+	blueboy[8] = 'engineer'
+	blueboy[9] = 'vice-president'
+	blueboy[10] = 'vice-president'
+
+* newspeak is verb for his statement
+
+	newspeak = array('10')
+	newspeak[1] = 'confirmed'
+	newspeak[2] = 'denied'
+	newspeak[3] = 'refused to confirm or deny'
+	newspeak[4] = 'refused to comment on'
+	newspeak[5] = 'denied any knowledge of'
+	newspeak[6] = 'agreed that there might be some validity to'
+	newspeak[7] = 'denied'
+	newspeak[8] = 'been uncharacteristically forthright about'
+	newspeak[9] = 'taken the Fifth Amendment when asked about'
+	newspeak[10] = 'been involuntarily retired after prematurely confirming'
+
+* hearsay is his statement
+
+	hearsay = array('10')
+	hearsay[1] = 'reports'
+	hearsay[2] = 'an article in Tass'
+	hearsay[3] = 'industry rumors'
+	hearsay[4] = 'authoritative gossip'
+	hearsay[5] = 'unsubstantiated dispatches'
+	hearsay[6] = 'widespread speculation'
+	hearsay[7] = 'unofficial reports'
+	hearsay[8] = 'high-level rumors'
+	hearsay[9] = 'leaks from beta-testers'
+	hearsay[10] = 'informed conjectures'
+
+* newstuff is the next product
+
+	newstuff = array('10')
+	newstuff[1] = 'system'
+	newstuff[2] = 'architecture'
+	newstuff[3] = 'CPU'
+	newstuff[4] = 'system bus'
+	newstuff[5] = 'token-ring network'
+	newstuff[6] = 'local-area network'
+	newstuff[7] = 'entry-level product'
+	newstuff[8] = 'top-end workstation'
+	newstuff[9] = 'video display standard'
+	newstuff[10] = 'operating system'
+
+* saywhat is an attribute of the new system
+
+	saywhat = array('10')
+	saywhat[1] = 'be totally proprietary'
+	saywhat[2] = 'run under Microsoft Windows'
+	saywhat[3] = 'be based on the Intel 80486'
+	saywhat[4] = 'remain a closely-held secret until the end of the century'
+	saywhat[5] = 'be generally compatible with existing systems'
+	saywhat[6] = 'use a subset of the OS/360 instruction set'
+	saywhat[7] = 'employ scalar interrupts and extensive masked gate arrays'
+	saywhat[8] = 'be introduced in the near future'
+	saywhat[9] = 'have DB-15 connectors'
+	saywhat[10] = 'be produced by robots in Singapore'
+
+* bluesite is where they're doing it
+
+	bluesite = array('10')
+	bluesite[1] = 'a product suitability testing facility'
+	bluesite[2] = 'several gamma-test sites'
+	bluesite[3] = 'a national refuge for migrating data'
+	bluesite[4] = 'IRS offices'
+	bluesite[5] = 'proposed MX missile bases'
+	bluesite[6] = 'the corporate detention center for dress-code violators'
+	bluesite[7] = 'a detoxification clinic'
+	bluesite[8] = 'a number of Fortune 500 companies'
+	bluesite[9] = 'a toxic waste dump'
+	bluesite[10] = 'a maximum-security prison'
+
+* bluecity is more where
+	bluecity = array('10')
+	bluecity[1] = ' on Three Mile Island'
+	bluecity[2] = ' in Armonk, N.Y.'
+	bluecity[3] = ' just above Boulder, Colo.'
+	bluecity[4] = ' in midtown Manhattan'
+	bluecity[5] = ' in beautiful downtown Burbank'
+	bluecity[6] = ' near Fargo, N.D.'
+	bluecity[7] = ' in the suburbs of Metetse, Wyo.'
+	bluecity[8] = ' in the Silicon Valley'
+	bluecity[9] = " between Cassini's Division and the Roche Limit"
+	bluecity[10] = ', formerly in Boca Raton until the company learned '
++			'that "Boca Raton" means "Rat Mouth" in Spanish'
+
+	morestuff = array('5')
+	morestuff[1] = 'further explanation'
+	morestuff[2] = 'detailed announcement'
+	morestuff[3] = 'specific details'
+	morestuff[4] = 'public statement'
+	morestuff[5] = 'voluntary confession'
+
+	sayblue = array('7')
+	sayblue[1] = 'would be premature at this point in time'
+	sayblue[2] = 'would cause smaller companies to file for Chapter 11,'
++			' which would just get us in trouble again with the Antitrust Division'
++			' of the Justice Department'
+	sayblue[3] = 'would cost me my pension'
+	sayblue[4] = 'might give clone-makers information they should'
++			' not have access to'
+	sayblue[5] = 'could get me transferred to Anchorage'
+	sayblue[6] = 'will have to come from the M*A*S*H cast'
+	sayblue[7] = 'must come from a more authoritative source'
+
+	bytehead = array('8')
+	bytehead[1] = 'observers'
+	bytehead[2] = 'analysts'
+	bytehead[3] = 'watchers'
+	bytehead[4] = 'spies'
+	bytehead[5] = 'followers'
+	bytehead[6] = 'observers'
+	bytehead[7] = 'analysts'
+	bytehead[8] = 'observers'
+
+	goodsay = array('10')
+	goodsay[1] = 'the greatest thing since sliced bread'
+	goodsay[2] = 'something the industry has long needed'
+	goodsay[3] = 'an important and significant advancement'
+	goodsay[4] = 'one of the finest achievements of western civilization'
+	goodsay[5] = 'a seminal step, pregnant with fertile possibilities'
+	goodsay[6] = 'the best improvement since they quit using punch cards'
+	goodsay[7] = 'the reason why Big Blue continues to lead the way'
+	goodsay[8] = 'a colossal advancement in personal-computing power'
+	goodsay[9] = 'another reason why no one ever got fired for buying IBM'
+	goodsay[10] = 'the first manifestation of the next generation of personal computers'
+
+	goodmore = array('10')
+	goodmore[1] = 'represents no major breakthrough'
+	goodmore[2] = 'contains no surprises'
+	goodmore[3] = 'employs an unusual huge interface known as the capybara'
+	goodmore[4] = 'requires an an EE to configure'
+	goodmore[5] = 'uses components yet to be invented'	
+	goodmore[6] = 'will work only with IBM peripherals'
+	goodmore[7] = 'requires a three-phase 37-hz 440-volt power supply'
+	goodmore[8] = 'blows up if connected to anything from a different manufacturer'
+	goodmore[9] = 'is compatible with Sidekick'
+	goodmore[10] = 'crashes at the slightest provocation'
+
+	butmore = array('9')
+	butmore[1] = 'set a standard'
+	butmore[2] = 'be popular with MIS professionals'
+	butmore[3] = 'be what Lotus is to spreadsheets'
+	butmore[4] = 'move us into the next generation'
+	butmore[5] = 'give the other companies something to try to emulate'
+	butmore[6] = 'give the clone-makers fits for at least two months'
+	butmore[7] = 'carry on the tradition of reliability and service'
+	butmore[8] = "give Radar O'Reilly something besides a teddy bear to sleep with"
+	butmore[9] = 'require substantial additional purchases by users,'
++			' thus making IBM stock a good buy'
+
+	badsay = array('10')
+	badsay[1] = 'William Gates, president of MicroSoft,'
+	badsay[2] = 'Phillipe Kahn of Borland International'
+	badsay[3] = 'Mitch Kaypor, formerly of Lotus Development Corp.,'
+	badsay[4] = 'Steve Jobs, a co-founder of Apple,'
+	badsay[5] = 'Gary Kildall, developer of CP/M,'
+	badsay[6] = 'Adam Osborne at Paperback Software'
+	badsay[7] = 'Bob Wallace, president of QuickSoft,'
+	badsay[8] = 'Esther Dyson, editor of Release 1.0,'
+	badsay[9] = 'Charles Babbage, conceptual founder of computing,'
+	badsay[10] = 'Lee Felsenstein, president of Golemics and designer of the Osborne I,'
+
+	notgood = array('10')
+	notgood[1] = 'a disaster waiting to happen'
+	notgood[2] = 'a solution in search of a problem'
+	notgood[3] = 'another chiclet-key PC Jr.'
+	notgood[4] = "Big Blue's biggest blunder since the RISC machine"
+	notgood[5] = 'as big a step backwards as returning to paper tape storage'
+	notgood[6] = 'a titanic company finally hitting an iceberg'
+	notgood[7] = "the kind of thing you'd expect from some hackers"
++			" in a garage, not from the world's biggest computer company"
+	notgood[8] = 'something that only defense contractors could afford'
+	notgood[9] = 'too much, too soon'
+	notgood[10] = 'the DP equivalent of herpes'
+
+	addbad = array('10')
+	addbad[1] = 'Only IBM would try getting away with this'
+	addbad[2] = 'It will go over like a pregnant pole-vaulter'
+	addbad[3] = 'In two years, it will be as popular as ferrite core memory'
+	addbad[4] = 'You can bet nobody will try to clone this one'
+	addbad[5] = 'There are people starving on this planet, '
++		"and yet we have expensive products like this.  That's disgusting"
+	addbad[6] = "They must be relying on the old saying "
++			"that there's one born every minute"
+	addbad[7] = "I've heard it runs slower than a dBASE sort"
+	addbad[8] = 'Maybe they developed it for the Strategic Defense'
++			" Initiative.  That's the only way it makes sense"
+	addbad[9] = "Perhaps it's only a stopgap until OS/2 is debugged"
+	addbad[10] = 'Only Big Blue would dare try anything like this'
+
+	catname = array('2')
+	catname[1] = 'Mark Emmer, publisher'
+	catname[2] = 'Ed Quillen, editor'
+
+	goodadj = array('10')
+	goodadj[1] = 'influential'
+	goodadj[2] = 'respected'
+	goodadj[3] = 'esteemed'
+	goodadj[4] = 'highly regarded'
+	goodadj[5] = 'popular'
+	goodadj[6] = 'noted'
+	goodadj[7] = "insiders'"
+	goodadj[8] = 'revered'
+	goodadj[9] = 'powerful'
+	goodadj[10] = 'innovative'
+
+	badwarn = array('7')
+	badwarn[1] = "All these reports have about as much credibility "
++			"as a White House spokesman"
+	badwarn[2] = "If these statements could be transformed into "
++			"matter, we could go into the fertilizer business"
+	badwarn[3] = "If you believe any of this, come and see me.  "
++			"I've got a bridge I'd like to sell you"
+	badwarn[4] = "Such speculation just proves the truth of the "
++			"old saying, 'Garbage in, Garbage out'"
+	badwarn[5] = "This baseless gossip ought to contain a "
++			"self-referential disclaimer"
+	badwarn[6] = "Utter fabrications like this ought to be an "
++			"embarrassment to everyone involved.  Unfortunately, some people "
++			"persist in circulating them"
+	badwarn[7] = "The circulation of such groundless rumors "
++			"represents as good a reason as any for joining Ed Meese "
++			"in his campaign to repeal the First Amendment"
+
+*---------------------------------------------------------------
+* Extract a number from the date for a random number 'seed'.
+* Take modulus by 555 to prevent overflow in random generator.
+* i.e. 555 * 59 = 32765, near the max integer.
+*
+	date() len(8) . today len(7) len(2) . s1 len(1) len(2) . s2
+	seed = s1 s2
+	seed = remdr(seed,555)
+*----------------------------------------------- RANDOM
+* Define random function
+
+	DEFINE('RANDOM(N)')
+	RAN_VAR = seed				:(RANDOM_END)
+RANDOM	RAN_VAR = REMDR(RAN_VAR * 59, 491)
+	RANDOM  = ((N * RAN_VAR) / 491) + 1	:(RETURN)
+RANDOM_END
+
+*----------------------------------------------- JUSTIFY
+* Define output formatting function
+*  Simplistically breaks line after 65th character at next
+*  blank or hyphen.
+
+	define('justify(s)')
+	just_pat = (len(65) break(' -') (span('-') | '')) . output
++		(span(' ') | '')			:(justify_end)
+justify	s just_pat =					:s(justify)
+	output = differ(s) s				:(return)
+justify_end
+
+*------------------------------------------------ MAIN BODY
+
+	boyblue = blueboy[random(10)]
+	speaknew = newspeak[random(10)]
+	sayhear = hearsay[random(10)]
+	stuffnew = newstuff[random(10)]
+	whatsay = saywhat[random(10)]
+	siteblue = bluesite[random(10)]
+	cityblue = bluecity[random(10)]
+	stuffmore = morestuff[random(5)]
+	bluesay = sayblue[random(7)]
+	headbyte = bytehead[random(8)]
+	saygood = goodsay[random(10)]
+	moregood = goodmore[random(10)]
+	morebut = butmore[random(9)]
+	saybad = badsay[random(10)]
+	goodnot = notgood[random(10)]
+	badadd = addbad[random(10)]
+	namecat = catname[random(2)]
+	adjgood = goodadj[random(10)]
+	warnbad = badwarn[random(7)]
+
+	output(.output,6,5000)
+
+	output = "           SPECIAL CATSPAW INSIDERS' REPORT FOR " today
+
+	justify('     An IBM ' boyblue ' has ' speaknew ' ' sayhear
++	" that the company's next personal-computer " stuffnew
++	' would ' whatsay '.  The ' boyblue ', who asked that his name '
++	'not be used, did say that the ' stuffnew ' was under development at '
++	siteblue cityblue ', but that any ' stuffmore ' "' bluesay '."')
+
+	justify('     Industry ' headbyte "' reactions were generally "
++	'favorable, with many calling the ' stuffnew ' "' saygood '."  '
++	'Technically, the new product "' moregood '," one said, "but it will '
++	morebut '."')
+
+	justify('     However, there were some dissenters.  '
++	saybad ' said it represented "' goodnot '," adding that "'
++	badadd '."')
+
+	justify('     ' namecat ' of the ' adjgood ' newsletter, '
++	"A SNOBOL's Chance, cautioned that " '"' warnbad '."')
+
+	output = 
+
+end

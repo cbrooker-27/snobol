@@ -1,0 +1,56 @@
+* CROSS.SNO - Print all intersections between two words
+*
+*	Sample program from Chapter 6 of the Tutorial
+*
+	&TRIM	= 1
+
+*  Get words from user
+*
+AGAIN	OUTPUT	= 'ENTER HORIZONTAL WORD:'
+	H	= INPUT					:F(END)
+
+	OUTPUT	= 'ENTER VERTICAL WORD:'
+	V	= INPUT					:F(END)
+
+*  Make copy of horizontal word to track position.
+	HC	= H
+
+*  Find next intersection in horizontal word.  Save
+*  the number of preceding horizontal characters in NH.
+*  Save the intersecting character in CROSS.
+*  Replace with '*' to remove from further consideration.
+*  Go to AGAIN to get new words if horizontal exhausted.
+*
+NEXTH	HC @NH ANY(V) . CROSS = '*'			:F(AGAIN)
+
+*  For each horizontal hit, iterate over possible
+*  vertical ones.  Make copy of vertical word to track
+*  vertical position.
+*
+	VC	= V
+
+*  Find where the intersection was in the vertical word.
+*  Save the number of preceding vertical characters in NV.
+*  Replace with '#' to prevent finding it again in that
+*  position.  When vertical exhausted, try horizontal again.
+*
+NEXTV	VC @NV CROSS = '#'				:F(NEXTH)
+
+*  Now display this particular intersection.
+*  We make a copy of the original vertical word,
+*  and mark the intersecting position with '#'.
+*
+	OUTPUT	=
+	PRINTV	= V
+	PRINTV POS(NV) LEN(1) = '#'
+
+*  Peel off the vertical characters one-by-one.  Each will
+*  be displayed with NH leading blanks to get it in the
+*  correct column.  When the '#' is found, display the full
+*  horizontal word instead.
+*  When done, go to NEXTV to try another vertical position.
+*
+PRINT	PRINTV LEN(1) . C =				:F(NEXTV)
+	OUTPUT = DIFFER(C,'#') DUPL(' ',NH) C		:S(PRINT)
+	OUTPUT = H					:(PRINT)
+END

@@ -1,0 +1,29 @@
+! GENTRAN.TTI
+!
+! This sample translation file demonstrates some of the things
+! which can be done with the simple GENTRAN program.  The following
+! GENTRAN directives will cause all excess spaces to be removed
+! from the file, vowels to be converted to asterisks, and some other
+! interesting functions.
+!
+! Echo the translation to the pc screen:
+%TRACE
+!
+! Collapse the lines (remove leading and trailing blanks, and compress blanks)
+%COLLAPSE
+!
+! Change all asterisks in the first position of the record to !s.
+\POS(0) "*"\ \"!"\
+!
+! Replace "George" with "Harry"
+!\"George"\ \"Harry"\
+!
+! Change all vowels to asterisks:
+\ANY("AEIOUaeiou")\ \"*"\
+!
+! Change all periods to commas
+\'.'\ \","\
+!
+! Convert upper or lower case J,K,L,M and N to 1,2,3,4 or 5.
+\SPAN("JKLMNjklmn") . WORD\ \*(REPLACE(WORD,"JKLMNjklmn","1234512345"))\
+

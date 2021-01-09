@@ -1,0 +1,153 @@
+
+
+
+
+                       VANILLA SNOBOL4  -- README.DOC
+
+Vanilla SNOBOL4 provides the entire Bell Labs SNOBOL4 programming language,
+except for real numbers and external functions.  The total size of the
+object program and data cannot exceed 30K bytes in this entry-level version.
+
+Here is a road map to the various files that should be present.  If any files
+are absent, you may obtain the full diskette by sending $10 to Catspaw, Inc.,
+at the address below.
+
+DOCUMENTATION
+-----------------------------------------------------------------------------
+README.DOC     This file
+
+DEMO.BAT       Interactive demonstration of the SNOBOL4 language.
+
+VANILLA.DOC    Overview of the SNOBOL4 programming language.
+
+SNOBOL4.DOC    Catalog of SNOBOL4-related products available from Catspaw:
+                 All SNOBOL4 books in print -- beginner to advanced
+                 SNOBOL4+      -- our enhanced SNOBOL4 package
+                 SPITBOL-68K   -- High-speed SNOBOL4 for 680x0 UNIX systems
+		 SPARC SPITBOL -- SPITBOL for Sun 4/SPARC systems
+		 SPITBOL-386   -- 32-bit protected mode with MS-DOS extender
+		                  (also available for OS/2 2.0)
+		 MaxSPITBOL    -- SPITBOL for the Apple Macintosh *** 
+		 ORDERING INFORMATION, PRICES AND SHIPPING ***
+
+PRINTMAN.BAT   Print the 150-page Vanilla SNOBOL4 tutorial and reference manual
+PM.EXE         Used by PRINTMAN.BAT
+
+GENTRAN.DOC    Describes GENTRAN.SNO, the GENeric TRANslation program.
+
+
+TO PRINT THE DOCUMENTATION
+-----------------------------------------------------------------------------
+All documentation is formatted for 8-1/2" x 11" paper, 10 pitch (Courier) type,
+66 lines per page.  Align the print head with the top-of-form perforation.
+
+Insert the VANILLA SNOBOL4 disk in drive A:, and type:
+
+        COPY A:*.DOC PRN
+
+To print the 150-page tutorial and reference manual, type:
+
+        A:PRINTMAN
+
+
+EXECUTABLE FILE
+-----------------------------------------------------------------------------
+SNOBOL4.EXE    The VANILLA SNOBOL4 compiler and interpreter.
+                 Type SNOBOL4 /H or SNOBOL4 /P for help.
+                 SNOBOL4 CODE provides interactive statement execution.
+
+
+
+
+
+
+SAMPLE PROGRAMS  (Ordered in approximately increasing complexity)
+-----------------------------------------------------------------------------
+Documentation for these programs is either in the manual or in comments at
+the beginning of each file.
+
+WDSTAR.SNO     Wordstar to ASCII conversion
+LENGTH.SNO     Line length counter.  Exercise from chapter 5
+FCOUNTS.SNO    Line and character counter.  Exercise from chapter 5
+TRIPLET.SNO    Format verse in triplets.  Exercise from chapter 5
+VOWELS.SNO     Display lines with double vowels
+SMARTVOW.SNO   Smarter version of VOWELS.SNO
+WORDS.SNO      Word counter.  Exercise from chapter 6
+WORDSIZE.SNO   Count word sizes
+CROSS.SNO      Show word intersections.  Exercise from chapter 6
+CAPITAL.SNO    State capitals.  Exercise from chapter 7
+
+LABCENT.SNO    Center mailing labels
+BUDGET.SNO     Describe U.S. deficit in words
+BITZER.SNO     Prepare text index
+CODE.SNO       Interactive statement execution and function loader
+GENTRAN.SNO    Generic string translation program
+BNF.SNO        Recognizer for Backus-Naur grammars
+DIFF.SNO       Symbolic differentiation
+RPOEM.SNO      Random poetry generator
+TICTAC.SNO     Tick-Tack-Toe game
+
+
+MISCELLANEOUS FILES
+-----------------------------------------------------------------------------
+BNF.DAT        Sample grammar for BNF.SNO
+BNF.IN         Sample test lines for BNF.SNO
+CAPITAL.DAT    Data for CAPITAL.SNO
+RPOEM.DAT      Data for RPOEM.SNO
+TEXT.IN        Sample text
+GENTRAN.TTI    Sample control file for GENTRAN.SNO
+
+DEXP.INC       Function to provide one-line function definitions
+DIFF.INC       Function to compute the difference of two strings
+ORDER.INC      Function to order the characters of a string
+
+
+
+
+
+
+
+
+
+SOFTWARE LICENSE
+-----------------------------------------------------------------------------
+Vanilla SNOBOL4 and the accompanying manual and programs are copyrighted
+material.  However, permission is hereby granted for copying and distribution
+of Vanilla SNOBOL4 provided:
+
+ 1. NO FEE GREATER THAN $10 IS CHARGED FOR USE, COPYING OR DISTRIBUTION.
+ 2. SNOBOL4.EXE AND ALL DOCUMENTATION ARE NOT MODIFIED IN ANY WAY, AND ARE
+    DISTRIBUTED TOGETHER.
+ 3. THE MANUAL MAY NOT BE PACKAGED WITH ANY OTHER PRODUCT.
+ 4. OUR COMMERCIAL SNOBOL4+ PRODUCT AND PRINTED MANUAL MAY NOT BE COPIED.
+
+This program is provided AS IS without any support or warranty, expressed or
+implied, including but not limited to fitness for a particular purpose.
+
+Vanilla SNOBOL4 was released because we believe many people would enjoy
+programming in SNOBOL4, if there was a version of the language that was widely
+and freely available.  Contributions are NOT requested or solicited.  Enjoy
+and share it!
+
+If you become a SNOBOL4 fan, you'll want SNOBOL4+, our $125 professional
+version.  It allows programs and data up to 300K, assembly-language functions,
+real numbers, and has dozens of extensions like: binary and random-access I/O,
+include files, built-in Shell sort, SPITBOL operators, SAVE files and royalty-
+free runtime, dozens of new functions and keywords and a symbolic debugger.
+SNOBOL4+ includes a 240-page printed and indexed manual, and over 70 files
+of sample programs and functions.
+
+Also available is SPITBOL, a high-performance 32-bit implementation of the
+SNOBOL4 language with execution speeds 6 to 10 times FASTER than SNOBOL4+.
+Versions are available for MS-DOS 80386/486, OS/2 2.0, Apple Macintosh,
+Sun 4/SPARC, and many 680x0 UNIX workstations.
+
+We also carry all SNOBOL4 books in print, from beginner to advanced.
+
+Enjoy this taste of SNOBOL4, the standard for text manipulation, pattern-
+matching, and fun programming.  We hope you develop an appetite.
+
+       CATSPAW, INC.,  P.O. BOX 1123,  SALIDA, COLORADO 81201 USA
+Phone: 719/539-3884, FAX: 719/539-4830, InterNet: cats!support@cs.arizona.edu
+
+

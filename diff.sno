@@ -1,0 +1,139 @@
+*	Symbolic differentiation.  Simple transformations for the
+*	binary operators +, -, *, /, and ^.
+*
+*	Provides an interesting example of the usage of OPSYN
+*	as well as expression parsing.
+*
+*	From STRING AND LIST PROCESSING IN SNOBOL4 by Ralph E. Griswold,
+*			 by permission of the author.
+*	----------------------------------------------------------------
+*
+*	(c) Copyright 1985, 1987 - Catspaw, Incorporated
+*
+
+*  PAREN
+*	Function to convert an infix expression to fully parenthesized form:
+*
+	DEFINE("PAREN(PAREN)L,R,OP,M")
+	STRIP	=	POS(0) "(" BAL . PAREN ")" RPOS(0)
+	ASSIGN	=	*GT(M,0) TAB(*(M - 1)) . L LEN(1) . OP REM . R
+	MATPM	=	(POS(0) BAL ANY("+-") @M FAIL) | ASSIGN
+	MATMD	=	(POS(0) BAL ANY("*/") @M FAIL) | ASSIGN
+	MATE	=	POS(0) BAL . L "^" . OP REM . R		:(PAREN_END)
+
+PAREN	PAREN	STRIP						:S(PAREN)
+	PAREN	MATPM						:S(FORM)
+	PAREN	MATMD						:S(FORM)
+	PAREN	MATE						:F(RETURN)
+FORM	PAREN	=	"(" PAREN(L) OP PAREN(R) ")"		:S(RETURN)
+PAREN_END
+
+*  RULES
+*
+*	Functions to perform the actual transformations used by D.
+*
+	DEFINE("ADD(U,V)")
+	DEFINE("SUB(U,V)")
+	DEFINE("MUL(U,V)")
+	DEFINE("DIV(U,V)")
+	DEFINE("EXP(U,V)")
+	OPSYN("&","+",2)
+	OPSYN("#","-",2)
+	OPSYN("%","/",2)
+	OPSYN("?","*",2)
+	OPSYN("@","**",2)
+	OPSYN("+","ADD",2)
+	OPSYN("-","SUB",2)
+	OPSYN("/","DIV",2)
+	OPSYN("*","MUL",2)
+	OPSYN("**","EXP",2)					:(RULES_END)
+
+*	Some simple reduction rules.
+ADD	INTEGER(U)						:F(ADDV)
+	ADD	=	INTEGER(V) U & V			:S(RETURN)
+	ADD	=	EQ(U,0) V				:S(RETURN)
+ADDT	ADD	=	"(" U "+" V ")"				:(RETURN)
+ADDV	INTEGER(V)						:F(ADDT)
+	ADD	=	EQ(V,0) U				:S(RETURN)F(ADDT)
+
+SUB	INTEGER(U)						:F(SUBV)
+	SUB	=	INTEGER(V) U # V			:S(RETURN)
+	SUB	=	EQ(U,0) V				:S(RETURN)
+SUBT	SUB	=	"(" U "-" V ")"				:(RETURN)
+SUBV	INTEGER(V)						:F(SUBT)
+	SUB	=	EQ(V,0) U				:S(RETURN)F(SUBT)
+
+MUL	INTEGER(U)						:F(MULV)
+	MUL	=	INTEGER(V) U ? V			:S(RETURN)
+	MUL	=	EQ(U,0) 0				:S(RETURN)
+	MUL	=	EQ(U,1) V				:S(RETURN)
+MULT	MUL	=	"(" U "*" V ")"				:(RETURN)
+MULV	INTEGER(V)						:F(MULT)
+	MUL	=	EQ(V,0) 0				:S(RETURN)
+	MUL	=	EQ(V,1) U				:S(RETURN)F(MULT)
+
+DIV	INTEGER(V)						:F(DIVU)
+	EQ(V,0)							:S(DIVT)
+	INTEGER(U)						:F(DIVT)
+	EQ(REMDR(U,V),0)					:F(DIVT)
+	DIV	=	U % V					:(RETURN)
+DIVT	DIV	=	"(" U "/" V ")"				:(RETURN)
+DIVU	INTEGER(U)						:F(DIVT)
+	DIV	=	EQ(U,0) 0				:S(RETURN)F(DIVT)
+
+EXP	INTEGER(V)						:F(EXPU)
+	EXP	=	EQ(V,0) 1				:S(RETURN)
+	EXP	=	EQ(V,1) U				:S(RETURN)
+	EXP	=	INTEGER(U) U @ V			:S(RETURN)
+EXPT	EXP	=	"(" U "^" V ")"				:(RETURN)
+EXPU	INTEGER(U)						:F(EXPT)
+	EXP	=	EQ(U,0) 0				:S(RETURN)
+	EXP	=	EQ(U,1) 1				:S(RETURN)F(EXPT)
+RULES_END
+
+*  D
+*	Function to differentiate a parenthesized expression E with
+*	respect to string X.  This solution redefines the arithmetic
+*	operators to allow writing the transformation rules in a
+*	natural, elegant form.  Binary operators only.
+*
+	DEFINE("D(E,X)U,V,OP")
+	BINARY	=	POS(0) "(" BAL . U ANY("+-*/^") . OP BAL . V ")"
++			RPOS(0)					:(D_END)
+
+D	E	BINARY						:S($("D" OP))
+	D	=	IDENT(E,X) 1				:S(RETURN)
+	D	=	0					:(RETURN)
+D+	D	=	D(U,X) + D(V,X)				:(RETURN)
+D-	D	=	D(U,X) - D(V,X)				:(RETURN)
+D*	D	=	U * D(V,X) + V * D(U,X)			:(RETURN)
+D/	D	=	(V * D(U,X) - U * D(V,X)) / V ** 2	:(RETURN)
+D^	D	=	V * U ** (V - 1) * D(U,X)		:(RETURN)
+D_END
+
+
+*	Program to test the differentiation routines:
+*
+
+	&TRIM	=	1
+	REMOVE	=	POS(0) "(" BAL . EXP ")" RPOS(0)
+	IMAGE	=	BREAK(";") . EXP LEN(1) REM . VAR
+
+DTEST	OUTPUT	=	'Type Expression;Variable or null line to '
++			'use previous result and same variable.'
+	EXP	=	'3*X^2+6*X-2'
+	VAR	=	'X'
+	OUTPUT	=	'For example:  ' EXP ';' VAR
+
+READ	LINE	=	INPUT					:F(END)
+	IDENT(LINE)						:S(READ1)
+	LINE	IMAGE						:F(ERROR)
+READ1	OUTPUT	=	"The derivative of " EXP " with respect to " VAR
++			" is "
+	EXP	=	D(PAREN(EXP),VAR)
+READ2	EXP	REMOVE						:S(READ2)
+	OUTPUT	=	EXP
+	OUTPUT	=						:(READ)
+ERROR	OUTPUT	=	'Bad input, re-enter'			:(READ)
+
+END

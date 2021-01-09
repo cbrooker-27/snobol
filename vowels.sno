@@ -1,0 +1,40 @@
+*	VOWELS.SNO
+*
+*	Sample program to read a file and display all lines containing
+*	double vowels.  The FIRST occurrence of the double vowels are
+*	underlined.
+*
+*	By simply changing the TARGET pattern, any desired letter pattern
+*	may be found.  For example, to find two vowels separated by a
+*	consonent, set:
+*
+*		TARGET = ANY(VOWEL) NOTANY(VOWEL " ,.-") ANY(VOWEL)
+*
+
+
+	&TRIM	=	1
+	VOWEL	=	'AEIOUaeiou'
+
+*	Define target pattern
+*
+	TARGET	=	ANY(VOWEL) ANY(VOWEL)
+
+*	Search pattern brackets the target with cursor operators.  I and J
+*	will be set to the subject positions on either side of the match.
+*
+	SEARCH	=	@I TARGET @J
+
+*	Read a line of input, fail upon end-of-file.
+*
+READ	LINE	=	INPUT				:F(END)
+
+*	Search the line.  Fail if not found.
+*
+	LINE	SEARCH					:F(READ)
+
+*	Success!  Display the line, and a underline the match points.
+*
+	OUTPUT	=	LINE
+	OUTPUT	=	DUPL(" ",I) DUPL("-",J - I)	:(READ)
+
+END

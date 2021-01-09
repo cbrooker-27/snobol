@@ -1,0 +1,112 @@
+*	BUDGET - Assistance for those who must verbalize the
+*		U.S. budget deficit for the years to come.
+*
+*	Takes a number of up to 30 digits long, and spells it out.
+*	Eliminates the embarrassment of having to stand up at a press
+*	conference and say: "Ah, well, you know, it's a 1 with
+*	seventeen zeros after it."
+*
+*	Be prepared!  The future is almost here.
+*
+*	Uses American conventions:
+*	   Million, Billion, Trillion, Quadrillion, Quintillion,
+*	   Sextillion, Septillion, Octillion.
+*
+*
+*	Copyright 1987 Catspaw, Inc.
+*
+*	SPELL function from Gimpel, "Algorithms in SNOBOL4"
+*
+	DEFINE('SPELL(N)M')
+	SPELL_PAT = POS(0) RTAB(4) ('LION' | 'SAND') RPOS(0) . M
+	ZERO_PAT = POS(0) SPAN('0')			:(SPELL_END)
+* Entry point.  Strip leading zeros.
+SPELL	N ZERO_PAT =
+
+* Dispatch to different labels depending on the size of N.
+	GE(SIZE(N),10)					:S(SPELL_BILL)
+	GE(SIZE(N),4)					:S(SPELL_1000)
+	GE(N,100)					:S(SPELL_100)
+	GE(N,20)					:S(SPELL_20)
+	GE(N,13)					:S(SPELL_13)
+
+* Process N from 0 (null) to 12 via string lookup.
+	(',1ONE,2TWO,3THREE,4FOUR,5FIVE,6SIX,7SEVEN,8EIGHT,9NINE,'
++	 '10TEN,11ELEVEN,12TWELVE,')  N BREAK(',') . SPELL	:(RETURN)
+
+* Here for N from 13 to 19.  Do like 30-90, then substitute 'TEEN'
+*  for 'TY' afterword.  Demonstrates recursion and number-string conversion.
+SPELL_13 N 1 LEN(1) . M
+	SPELL = SPELL(M 0)
+	SPELL 'TY' = 'TEEN'
+	SPELL 'FOR' = 'FOUR'				:(RETURN)
+
+* Here for N from 20 to 99
+SPELL_20 N LEN(1) . M =
+	'2TWEN,3THIR,4FOR,5FIF,6SIX,7SEVEN,8EIGH,9NINE,' M BREAK(',') . SPELL
+	SPELL = SPELL 'TY'
+	SPELL = NE(N,0) SPELL '-' SPELL(N)		:(RETURN)
+
+* Here for N from 100 to 999.  Convert hundreds and tens recursively.
+SPELL_100 N LEN(1) . M =
+	SPELL = SPELL(M) ' HUNDRED'
+	SPELL = NE(N,0) SPELL ' AND ' SPELL(N)		:(RETURN)
+
+* Here for numbers between 1,000 and 10**9.  Set M to N/1000, and recurse.
+* SPELL_PAT tests for numbers ending with all zeros, like 1,000,000.
+* The RPOS(0) . M construct sets M to null as a flag that will suppress
+* the ' THOUSAND' suffix.
+SPELL_1000 N RTAB(3) . M =
+	SPELL = SPELL(M)
+	SPELL SPELL_PAT
+	SPELL  'THOUSAND' = 'MILLION'
+	SPELL = DIFFER(M) SPELL ' THOUSAND'
+	SPELL = NE(N,0) SPELL ', ' SPELL(N)		:(RETURN)
+
+* Here for numbers of 1,000,000,000 and larger (American usage).
+* Same trick is used for M to suppress ' BILLION' suffix.
+SPELL_BILL	N RTAB(9) . M =
+	SPELL = SPELL(M)
+	SPELL SPELL_PAT
+	SPELL 'QUINT' = 'OCT'
+	SPELL 'QUADR' = 'SEPT'
+	SPELL 'TR'    = 'SEXT'
+	SPELL 'B'     = 'QUINT'
+	SPELL 'M'     = 'QUADR'
+	SPELL 'THOUSAND'   = 'TRILLION'
+	SPELL = DIFFER(M) SPELL ' BILLION'
+* Can't test N directly with NE(), because it may be too large as an integer.
+* So remove leading (or all) zeros, and see if anything left.
+	N ZERO_PAT =
+	SPELL = NE(SIZE(N),0) SPELL ' ' SPELL(N)	:(RETURN)
+SPELL_END
+
+
+*	PRINT(S)
+*
+*	Function to print a string S, breaking lines at the first
+*	space or hyphen after the 65th character on each line.
+*
+	DEFINE('PRINT(S)')
+	PRINT_PAT = POS(0) (LEN(65) BREAK('- ') ANY('- ') ) . OUTPUT
+							:(PRINT_END)
+PRINT	S PRINT_PAT =					:S(PRINT)
+	OUTPUT = S					:(RETURN)
+PRINT_END
+
+
+****  MAIN PROGRAM ****
+	&TRIM = 1
+	OUTPUT = "U.S. Budget Deficit Pronoucer"
+	OUTPUT = "Numbers with up to 30 digits are allowed (commas permitted)"
+	OUTPUT = "Type Control-Z to terminate."
+
+MAIN	OUTPUT = "Enter Deficit: " CHAR(26)
+	NUMBER = INPUT					:F(END)
+STRIP	NUMBER ANY('$,') =				:S(STRIP)
+	NUMBER POS(0) SPAN('0123456789') RPOS(0)	:F(ERROR)
+	LE(SIZE(NUMBER),30)				:F(ERROR)
+
+	PRINT(SPELL(NUMBER) ' DOLLARS')			:(MAIN)
+ERROR	OUTPUT = "Must be numeric and 30 or fewer digits"	:(MAIN)
+END

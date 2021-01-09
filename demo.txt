@@ -1,0 +1,282 @@
+                       THE SNOBOL4 PROGRAMMING LANGUAGE
+
+If you ever have to work with textual data, the SNOBOL4 language lets you do
+it quickly and easily.  Give us 10 minutes and we'll give you a quick tour of
+the language and explain why reviewers call it the "standard for text
+processing."
+
+We've included a working version of SNOBOL4, a tutorial and reference manual
+and many sample programs, so if you're intrigued by what you see, you can
+immediately start learning and using the language in earnest.
+
+About This Demo
+----------------
+
+SNOBOL4 is controlling this demo, so the sample statements and results you see
+here are produced "live" by SNOBOL4.  After the demonstration, you'll have the
+opportunity to enter your own practice statements.
+
+The demo runs in text mode, and should run on any MS-DOS computer with a 25-
+line monitor.
+
+Ready to learn about SNOBOL4?
+<
+                               LANGUAGE BASICS
+Variables
+---------
+
+Like other languages, SNOBOL4 provides variables to hold values:
+
+*    Game = 5
+*    Score = "Love"
+
+Unlike many other languages though, you don't have to declare the type of data
+to be held in each variable.  SNOBOL4 adjusts the variable automatically,
+depending upon what you store into it.  That means that a variable such as
+Score can have a text string like "Love" at one moment, then hold an integer
+sometime later:
+
+*    Score = 15
+
+For the technically minded, SNOBOL4 variables are "dynamically typed."
+<
+Type Checking
+-------------
+
+Because SNOBOL4 remembers the type of data currently in each variable, all
+operators and functions can check the values given them.  SNOBOL4 will
+automatically convert any that are in the wrong form.  Suppose we try to add
+the text string "30" to the value in Score:
+
+>    Score = Score + "30"
+
+The addition operator (+) automatically converts the string "30" to the
+integer 30 before adding it to the integer 15 in variable Score.  Here we show
+the result of the operation within parentheses.
+
+Type checking eliminates many hidden program bugs, and automatic type
+conversion greatly simplifies programming.
+<
+String Concatenation
+--------------------
+
+SNOBOL4's real strength lies in its ability to manipulate textual data, or
+"strings" of characters.  The simplest operation is "concatenation," which
+involves appending one string to another.  In SNOBOL4, we do this simply by
+writing the variables or literal strings to be concatenated one after the
+other, with a space between each:
+
+>    Test = "Quick" "Brown" "Fox"
+>    State = "The score in game number " Game " is " Score
+
+Here's another example of type conversion.  The integers 5 and 15 in the
+variables Game and Score were converted automatically to strings so they could
+be concatenated with the other strings in the second statement above.
+
+Notice what you DON'T have to do in SNOBOL4:  explicitly manage memory stor-
+age.  It happens automatically -- SNOBOL4 allocates space as needed, and
+releases it when the data is no longer needed.  It's effortless, and it's
+foolproof.
+<
+Pattern Matching
+----------------
+
+There are other operations besides concatenation to manipulate strings, but
+for brevity, we'll skip them and move on to SNOBOL4's most unique and powerful
+feature, pattern matching.
+
+Pattern matching examines a "subject" string for some combination of charac-
+ters, called a "pattern."  The matching process may be very simple, or
+extremely complex.  For example:
+
+1. The subject contains several color names.  The pattern is the string
+   "BLUE". Does the subject string contain the word "BLUE"?
+2. The subject contains a record of data read from a file.  The pattern
+   deciphers the field structure within the record, and stores the component
+   pieces into variables.
+3. The subject contains a paragraph of English text.  The pattern describes
+   the spacing rules to be applied after punctuation.  Does the subject string
+   conform to the punctuation rules?
+4. The subject string represents the current board position in a game of Tick-
+   Tack-Toe.  The pattern examines this string and determines the next move.
+5. The subject contains a statement from a prototype language.  The pattern
+   contains the grammar of that language.  Is the statement properly formed
+   according to the grammar?
+<
+A pattern is a unique data type in SNOBOL4, something that can be compiled and
+stored in a variable.  For example,
+
+*    Colors = "red" | "green" | "blue"
+
+assigns to Colors a pattern that will match the string "red" OR the string
+"green" OR the string "blue".  To use the pattern, we simply write the string
+or variable to be tested, followed by the pattern.
+
+*    "turn at the red house" Colors . Result
+
+The period between Colors and Result says "take whatever matched on the left
+side of the period, and assign it to the variable on the right."  Since the
+"red" portion of Colors matched, SNOBOL4 assigned it to the variable named
+Result.
+<
+If the subject is a variable, we can replace just whatever matches:
+
+*    Instruction = "turn at the red house"
+
+       subject  pattern = replacement
+       ÄÄÄÂÄÄÄ  ÄÄÄÂÄÄÄ   ÄÄÂÄÄÄÄÄÄÄÄ
+          ³        ³        ³
+     ÄÄÄÄÄÁÄÄÄÄÄ ÄÄÁÄÄÄ   ÄÄÁÄÄ
+>     Instruction Colors = "BIG"
+<
+The real power in pattern matching comes from two additional features:
+
+1. Patterns can be more than simple literal strings.  They can specify the
+   KIND of characters to be matched, such as a run of digits, or characters
+   "up to" a punctuation mark, or to a fixed position in the subject, etc.
+
+2. Patterns can be built using AND and OR combinations of other patterns.
+   Patterns may even be defined in terms of themselves (recursive patterns).
+
+Here are a few simple examples:
+
+*    Vowel = any("aeiou")
+*    DoubleVowel = Vowel Vowel
+*    "vacuum" DoubleVowel . Result
+
+*    Letters = "abcdefghijklmnopqrstuvwxyz"
+*    Wordpat = break(Letters) span(Letters) . Result
+*    Instruction Wordpat = ""
+*    Instruction Wordpat = ""
+<
+Program Structure
+-----------------
+
+Statements like the ones shown will "succeed" if the indicated operation can
+be carried out, or "fail" if they cannot.  SNOBOL4 also provides all the
+"testing" operations familiar from other languages, such as comparison of
+strings or numeric values.  Comparisons also will "succeed" or "fail".
+
+Normally, SNOBOL4 executes statements in sequence.  However the success or
+failure of a statement can be tested, and program control passed to a differ-
+ent statement instead.  Statements are identified by "statement labels" that
+precede the statement:
+
+*         Test = "sunspots and flares"
+*Again    Test Wordpat = ""                  :S(Again)
+
+This little program uses Wordpat to look for a word in the subject, Test.  If
+found, it is replaced with an empty string, effectively deleting it from Test.
+The pattern match succeeds, and the ":S" test sends the program back to the
+same statement to get another word.  When the pattern match ultimately fails,
+control proceeds to the next statement.
+<
+Miscellaneous
+-------------
+
+There are lots of other goodies in SNOBOL4.  You can have arrays of data,
+where each array element can hold data of a different type.  A Table is like a
+one-dimensional array, except that its subscripts aren't limited to integers.
+Any type of SNOBOL4 data can be used as subscripts.  Here's an example using
+string subscripts:
+
+*    Sound = table()
+*    Sound["dog"] = "bark"
+*    Sound["cat"] = "meow"
+
+Tables expand automatically as you store things in them.  They're handy for
+storing relationships and building indexes to data.
+
+You also can define your own data types, redefine SNOBOL4's operators, and
+create your own functions.  You can even compile new program statements while
+your program is running (as this demo does).
+
+It's a rich language, and the parts work harmoniously to let you express
+complex ideas concisely.
+<
+Where to Next?
+--------------
+
+The file README.DOC provides a road map to the files on this disk.
+
+If you want to learn more about the SNOBOL4 language, the batch file
+PRINTMAN.BAT will produce a language tutorial and reference manual.
+
+If you want to transform a file by performing multiple line-by-line search-
+and-replaces, we've included a pre-written SNOBOL4 program that does just
+that.  It can replace literal strings, or use the full range of SNOBOL4
+pattern matching.  Print the file GENTRAN.DOC for instructions.  You can run
+GENTRAN at the DOS prompt by typing:
+
+     >SNOBOL4 GENTRAN
+
+If you want to contact SNOBOL4's authors, or ask about our enhanced versions
+for MS-DOS, 386 systems, Unix, or Macintosh, here's how to reach us:
+
+Catspaw, Inc.            Voice: 719-539-3884,  8 am-5 pm (GMT-7)
+P.O. Box 1123            Fax: 719-539-4830
+Salida, Colorado 81201   Internet: cats!support@cs.arizona.edu
+USA                      uucpnet: ...{uunet,allegra,noao}!arizona!cats!support
+<
+
+
+
+
+
+
+
+
+
+
+
+Welcome to SNOBOL4!
+-------------------
+
+This concludes our brief tour of the SNOBOL4 language.
+
+Would you like to type a few statements interactively, or return to DOS?  In
+keeping with the spirit of this demo, we'll use a SNOBOL4 statement to read
+and process your response to this question.
+
+Enter "Y" to try out a few statements, or anything else to return to DOS.
+
+*    Input ("Y" | "y")                       :S(next)F(end)
+Interactive Statement Execution
+-------------------------------
+
+Here are some guidelines to get you started:
+
+1. Begin all statements with blank or tab (to skip the label field).
+2. Surround all operators (=, +, -, etc.) with a blank on both sides.
+3. This Vanilla version of SNOBOL4 does not support real numbers.
+4. You can display data by assigning values to the variable named Output.
+5. You can read data from the keyboard by accessing the variable named Input.
+6. Don't try to use statement labels or program Gotos at this time.  Just
+   concentrate on writing simple statements.
+7. SNOBOL4 is supposed to be fun, so don't get frustrated!  This demonstration
+   can't substitute for reading the tutorial in the manual on the disk.
+
+Here are some samples to get you started.  SNOBOL4 will prompt with a "?", and
+will display "Success" or "Failure" after each statement.
+
+?    Output = 3 + 4
+<
+
+
+
+
+
+
+
+
+
+
+?    b = "blue" "bird"
+?    output = b
+?    b ("gold" | "blue") . Output ("fish" | "bird") . Output
+
+
+OK!  You've got the helm.  Type END at the left margin to terminate, or type
+Control-C.
+
+&

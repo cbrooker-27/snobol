@@ -1,0 +1,316 @@
+
+
+
+
+
+
+
+                                   VANILLA SNOBOL4
+
+            Vanilla SNOBOL4 provides the entire Bell Labs SNOBOL4 program-
+          ming language, except for real numbers and external functions.
+
+            The total size of the object program and data cannot exceed 30K
+          bytes in this entry-level version.  Vanilla SNOBOL4 and the ac-
+          companying documentation are copyrighted materials.  However, it
+          may be copied and shared according to these terms:
+
+            1. No fee greater than $10 is charged for use, copying or dis-
+               tribution.
+
+            2. SNOBOL4.EXE and all documentation are not modified in any
+               way, and are distributed together.
+
+            3. The manual may not be packaged with any other product.
+
+            4. Neither SNOBOL4+ (our commercial product), nor its printed
+               manual, may be copied.
+
+            Vanilla SNOBOL4 was released because we believe many people
+          would enjoy programming in SNOBOL4, if there was a version of the
+          language that was widely and freely available.  Contributions are
+          NOT requested.  Enjoy and share it!
+
+            This file, VANILLA.DOC, provides an overview of the SNOBOL4
+          Programming Language, and why you'll find it to be an interesting
+          and useful tool.
+
+
+                            THE PHILOSOPHY OF SNOBOL4...
+
+            Like most high-level computer languages, SNOBOL4 represents a
+          design philosophy.  C, for instance, was designed for power and
+          portability.  BASIC was designed for introducing students to com-
+          puters, and Pascal for teaching structured programming.
+
+            SNOBOL4's designers felt that programming time and effort
+          should be minimized, even if the computer had to do additional
+          work.  The philosophy is to allow the programmer to focus on
+          solving the problem at hand, rather than on details like dynamic
+          memory allocation, variable typing, data conversion, and so on.
+
+            If ease of use coupled with extraordinary power and versatility
+          appeals to you, please read on.
+
+
+
+
+
+
+
+
+
+
+       VANILLA.DOC (V1.2)              - 1 -                    Catspaw, Inc.
+
+
+
+
+
+                               THE STRING LANGUAGE...
+
+            Almost uniquely among computer languages, SNOBOL4 treats a
+          string as a distinct data type, rather than as a sequence or
+          array of discrete characters.
+
+            That's an abstraction.  Consider a concrete example to fill an
+          everyday need -- converting a WordStar file into an ASCII file.
+
+            In most languages, your program would have to examine each
+          character in the WordStar file.  If its ASCII value is 127 or
+          below, the character is passed on; if above, then 128 is sub-
+          tracted.  Then the individual bytes have to be reassembled into a
+          string.
+
+            Assuming that the input and output files have been designated
+          on the command line, the entire conversion program in SNOBOL4
+          looks like this:
+
+                    &Alphabet LEN(128) . Normals LEN(128) . Highs
+            Loop    Output = REPLACE(Input, Highs, Normals)   :S(Loop)
+
+            Notice how the REPLACE function operates on the entire string
+          at once?  Is there any other language that could do this conver-
+          sion in a two-line program?  How much time could you save by
+          writing data-conversion programs in SNOBOL4?
+
+
+                               THE PATTERN LANGUAGE...
+
+            While SNOBOL4 provides a rich repertoire of string functions,
+          its other specialty is patterns.  Suppose, for instance, you have
+          a list of words, and you want to write out all those that start
+          with "b" or "d", followed by a vowel, and end in "ly".  Here's
+          the entire program:
+
+          * Match at the start of a word and define a pattern:
+               &Anchor = 1
+               WantPat = ('b' | 'd') ANY('aeiou') RTAB(2) 'ly'
+          
+          * Read a line of input, perform the match, write results:
+          Fetch     Word = Input                  :F(End)
+                    Word WantPat                  :F(Fetch)
+                    Output = Word                 :(Fetch)
+          End
+
+            SNOBOL4's syntax is so easy that you probably didn't need to
+          know it to understand this program.  A line can have a label, an
+          operation, or a goto, or any two, or all three.  Statements can
+          succeed or fail.  The goto can be conditional upon success or
+          failure.
+
+            In the above program, a pattern is first defined.  At Fetch,
+          the input is assigned to the variable Word.  If that fails, the
+
+
+
+       VANILLA.DOC (V1.2)              - 2 -                    Catspaw, Inc.
+
+
+
+
+
+          program has run out of input, and the program stops by transfer-
+          ring to End.
+
+            Next the word is compared to the pattern.  If that fails, the
+          program goes back to Fetch to get the next word.  If the opera-
+          tion succeeds, control goes to the next line, where Word is writ-
+          ten out, and a transfer made to Fetch to continue the loop.
+
+            Pattern matching is a very-high level language concept.  Pat-
+          terns may be arbitrarily complex -- SNOBOL4 will search among the
+          many alternatives for a match.  Patterns may even be recursively
+          defined:
+
+               LIST = ELEMENT | ELEMENT "," *LIST
+
+
+                               THE USEFUL LANGUAGE...
+
+            The range of current uses for SNOBOL4 is as diverse as its
+          users.  Because programs can be written quickly for testing,
+          systems-level programmers use it for prototyping assemblers, com-
+          pilers and language translators.
+
+            In many offices, the utilities for reformatting data and text
+          are short SNOBOL4 programs.  With its backtrack searching, recur-
+          sive abilities, and first-class data objects, SNOBOL4 is finding
+          a home in artificial-intelligence research.  Its pattern-matching
+          makes it a natural for querying data bases.
+
+            Researchers use it for finding patterns in everything from
+          medieval music to DNA sequences.  Newspapers and print shops use
+          it for text formatting, translation and typesetting.  Others find
+          SNOBOL4 the perfect tool for one-shot "throw-away" programs.
+
+            If the challenge before you is primarily non-numeric, the odds
+          are that you can use SNOBOL4 to meet that challenge more quickly
+          and easily than with any other language.
+
+
+                               THE ELEGANT LANGUAGE...
+
+            SNOBOL4 is so powerful that its programs are typically quite
+          short.  Source programs are typical 5 to 10 TIMES smaller than
+          equivalent C or Pascal programs.
+
+            SNOBOL4 allows an unlimited number of user-defined subroutines.
+          By relying upon them, you create programs of structure and ele-
+          gance.  Like patterns, subroutines may be recursive.  They're
+          also fast to write and easy to update, revise, and maintain.
+
+
+                            THE EASY-TO-LEARN LANGUAGE...
+
+            Because SNOBOL4's syntax is so simple, it's easy to learn the
+
+
+
+       VANILLA.DOC (V1.2)              - 3 -                    Catspaw, Inc.
+
+
+
+
+
+          basics and be writing useful programs in just a few hours. Human-
+          ities professors love it because its short programs are simple to
+          explain to students without a computer background.
+
+            But while it is easy to learn, it's not easy to exhaust.  The
+          concepts embodied -- patterns, success and failure, tables,
+          recursion, run-time code compilation -- will stimulate your
+          interest indefinitely.
+
+            Whether you're a systems designer, software developer, language
+          enthusiast, end user, or the office PC guru, you can put SNOBOL4
+          to work immediately to make your time more productive.
+
+
+                              THE FLEXIBLE LANGUAGE...
+
+            Not only can you create your own "language within a language"
+          with SNOBOL4's roll-your-own functions, but you can define your
+          own data types.
+
+            As if that weren't flexibility enough, SNOBOL4 also allows you
+          to redefine or extend its operators during execution -- flexibil-
+          ity that few other languages dare to offer.
+
+            In fact, you can create and execute new program segments at
+          runtime; programs can evolve based upon the data they are pro-
+          cessing.  It's trivial to write a SNOBOL4 program that reads,
+          compiles and executes other SNOBOL4 programs.  Try doing that in
+          BASIC or Pascal!
+
+            One of SNOBOL4's most exquisite features is the TABLE.  In
+          essence, it's a one-dimensional array where the index can be any
+          data type.  You aren't limited to A[1] or the like; your table
+          can have indices like A["what"] or A[7.3].
+
+            The table, almost unique to SNOBOL4, provides associative mem-
+          ory referencing -- so that data can be quickly stored and refer-
+          enced in its natural form.
+
+
+                        THE POWERFUL AND PORTABLE LANGUAGE...
+
+            Beyond its specialties of string and pattern-matching, SNOBOL4
+          provides a full array of mathematical operations; it's a general-
+          purpose programming language.  Pointers, indirect-referencing and
+          user-defined data types permit arbitrary data structures such as
+          lists, trees, and networks.
+
+            Because the SNOBOL4 language has been implemented on a wide
+          range of mainframe and mini-computer systems, programs can be
+          developed and tested on a desktop machine, then easily ported to
+          the bigger computers, generally with no modification.
+
+
+
+
+
+       VANILLA.DOC (V1.2)              - 4 -                    Catspaw, Inc.
+
+
+
+
+
+                             THE UPGRADEABLE LANGUAGE...
+
+            If you become a SNOBOL4 fan, you'll want SNOBOL4+, our $125 pro-
+          fessional version (plus shipping).  It allows programs and data
+          up to 300K, assembly-language functions, real numbers, and has
+          dozens of extensions like: binary and random-access I/O, include
+          files, built in Shell sort, Spitbol operators, SAVE files and
+          royalty-free runtime, dozens of new functions and keywords and a
+          symbolic debugger.  It interfaces easily to specialized systems
+          and components, such as Novell's Btrieve(tm) file management
+          package.  You can find more information about SNOBOL4+ in the
+	  file SNOBOL4.DOC.
+
+            SNOBOL4+ includes a 240-page printed and indexed manual, and
+          over 70 files of sample programs and functions.  SNOBOL4+ is not
+          a public-domain product, and it may not be copied (except for le-
+          gitimate backup purposes).  The printed manual may not be copied.
+
+            SNOBOL4+ owners also get telephone and written support, should
+	  you ever have a question about SNOBOL4 programming.
+
+            We carry all SNOBOL4 books in print, from beginner to advanced.
+          Also available is SPITBOL, a high-performance 32-bit implementation
+	  of the SNOBOL4 language with execution speeds 6 to 10 times FASTER
+	  than SNOBOL4+.  Versions are available for MS-DOS 80386/486, OS/2
+	  2.0, Apple Macintosh, Sun 4/SPARC, and many 680x0 UNIX workstations.
+
+            Enjoy this taste of SNOBOL4, the standard for text manipula-
+          tion, pattern-matching, and fun programming.  We hope you develop
+          an appetite.
+
+          CATSPAW, INC.   P.O. BOX 1123   SALIDA, COLORADO 81201   USA
+
+            Telephone:   (719) 539-3884
+            FAX:         (719) 539-4830
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+          ____________________
+
+            (tm) Unix is a registered trademark of AT&T
+
+
+
+       VANILLA.DOC (V1.2)              - 5 -                    Catspaw, Inc.

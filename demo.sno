@@ -1,0 +1,74 @@
+	&trim = 1
+	&trace = 10000
+	define('outfun()')
+	define('resfun(name)n1')
+	trace('output',"value",,'outfun')
+	trace('result',"value",,'resfun')
+	filename = "demo.txt"
+	&parm break(";") ";" rem . filename
+	input('in_',1,,filename)	:f(error)
+	var_pat = (any(&ucase &lcase) (break(" " char(9)) | rpos(0))) . var
+
+* Here to start a new screen load.  Initialize line counter.
+next	lc = 0
+main	line = in_			:f(end)
+	line pos(0) any('*<>?&') . c = "" :s($('d' c))
+	output = line			:(main)
+
+d>	line var_pat			:f(execute)
+	trace(var,"value",,'resfun')	:(exec2)
+
+* Display line to be executed, then compile and execute it.
+execute
+d*	var = ""
+exec2	output = line
+	code = code(line '; :(exec3)')	:s<code>f(main)
+exec3	(differ(var) differ(var,"RESULT") stoptr(var))	:(main)
+
+* Scroll previous output to top of screen, wait for user to type Enter.
+scroll
+d<	output = lt(lc,24)		:s(scroll)
+	output = "Press Enter (ды) to continue, Control-C to terminate:" char(26)
+	output = ?input			:(next)
+
+* Trace function to increment line counter on each assignment to output
+outfun	lc = lc + 1			:(return)
+
+* Trace assignments to result variable.
+resfun	name pos(1) rem . n1 = replace(n1, &ucase, &lcase)	:f(error)
+	output = ident(datatype($name),"INTEGER") '(' name ' <-- ' $name ')'
+	output = ident(datatype($name),"STRING") '(' name ' <-- "' $name '")'
+	lc = lc + 1			:(return)
+
+* Display line to be executed in CODE format.
+d?	output = '?' line
+	code = code(line '; :s(s1)f(f1)')	:s<code>f(main)
+s1	output = "Success"		:(main)
+f1	output = "Failure"		:(main)
+
+* Here to tryout some statements interactively.
+d&	stoptr('output')
+	stoptr('result')
+	endfile(1)
+
+	input('keyboard', 15, 255, 'CON:')
+	&errlimit = 1000
+	define('errfun_()')
+	trace('errtype','keyword',,'errfun_')
+
+newlin  screen = '?' char(26)
+	inpt_  = keyboard			:f(end)
+*	Compile statement with Goto appended and execute it
+	code   = code(inpt_ ' :s(s) f(f)')	:s<code>
+	screen = 'Compilation error: ' &errtext ', reenter:' :(newlin)
+
+s	output = 'Success'			:(newlin)
+f	output = 'Failure'			:(newlin)
+
+errfun_	output = 'Execution error #' &errtype ', ' &errtext :(return)
+
+* Here if cannot find the demo.txt filename.
+error	&CODE = 1
+
+end
+

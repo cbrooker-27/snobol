@@ -1,0 +1,197 @@
+*	RPOEM.SNO - Poetry Generator
+*
+*	Reads "grammar" from file RPOEM.DAT and generates "poetry."
+*
+*	The grammar contains syntactic variables, each of which is
+*	is provided with multiple alternatives.  A random number
+*	generator is used to select among the alternatives.
+*	Most alternatives are literal strings; some are syntactic
+*	variables, causing a recursion.
+*
+*	RPOEM and RSELECT are several of the many programs and functions
+*	from "Algorithms in SNOBOL4," by James F. Gimpel.  They have been
+*	simplified and altered for use with Vanilla SNOBOL4.
+*
+*	V1.1 Improve seed selection for random number generator.
+*
+*	(c) Copyright 1987 Catspaw, Inc.
+
+
+	&TRIM   = 1
+	&ANCHOR = 1
+
+* Open the grammar file
+*
+	INPUT(.IN_FILE,1,,'RPOEM.DAT')		:S(START)
+	OUTPUT = "Could not open grammar file - RPOEM.DAT"	:(END)
+START
+
+-EJECT
+* RANDOM(N)
+*	Returns a random number in the range 1 to N.
+*	This function has a period of only 490, which is adequate for
+*	a poetry generator, but not for serious mathematical work.
+*	A far better generator can be constructed with the 64-bit real
+*	numbers of SNOBOL4+.
+*
+	DEFINE('RANDOM(N)')
+	RAN_VAR = 1				:(RANDOM_END)
+RANDOM	RAN_VAR = REMDR(RAN_VAR * 59, 491)
+	RANDOM  = ((N * RAN_VAR) / 491) + 1	:(RETURN)
+RANDOM_END
+
+-EJECT
+* RSELECT(S)
+*	Select a random alternative from S.
+*
+*	S is of the form "|ABC|CAT|...|HOTDOG", where the first character
+*	is the delimiter between alternatives, and there may be an
+*	arbitrary number of alternatives.
+*
+*	Since RSELECT will be called repeatedly with the same argument
+*	string, a major optimization occurs here.  A table called CODE
+*	is created, and the alternatives are stored within it.  After
+*	breaking out all the alternatives, the table is converted to
+*	an array with a unique name, RSEL.n, where n is incremented for
+*	each different S the function is called with.
+*
+*	Then a line of code is constructed of the form:
+*		" RESELECT = RSEL.n<RANDOM(w), 2> :(RETURN)"
+*	where w is the number of alternatives.  Thus, executing this code
+*	fragment will return a string chosen at random from the array RSEL.n.
+*	The code is compiled and saved in a master table, RSEL_TBL, indexed
+*	by the original string S.
+*
+*	On subsequent calls, the function consults RSEL_TBL.  If the argument
+*	string is found, the table provides the ALREADY COMPILED CODE, and
+*	merely jumps to it to pick an alternative.  If it is not found in
+*	the table, then the previous code construction process is begun.
+*
+*	This is an interesting function because it illustrates that table
+*	entries can contain compiled code, not just strings, and shows the
+*	use of the indirection operator ($) to construct new variable names.
+*
+
+	DEFINE('RSELECT(S)WTS,ALT,CODE,SSAVED,BC')
+*
+*	Initialization. Define master table, and counter for the sub-arrays.
+*
+	RSEL_TBL  =  TABLE()
+	RSEL_CTR  =  0				:(RSELECT_END)
+*
+*	Function entry.  Test if argument has been seen before.
+*	If so, simply jump to the compiled code and return to caller from it.
+*
+RSELECT	CODE = RSEL_TBL<S>
+	DIFFER(CODE,NULL)			:S<CODE>
+*
+*	New argument.  Have to parse it.  Save copy and obtain delimiter.
+	SSAVED  =  S
+	S   LEN(1) . BC  =			:F(RETURN)
+*
+*	Create pattern to isolate alternatives, and table to save them.
+	RSEL_PAT = (BREAK(BC) | REM) . ALT
+	CODE = TABLE()
+*
+*	Loop removing alternatives and storing them in table CODE.
+RSELECT_1
+	S   RSEL_PAT  =				:F(ERROR)
+	WTS  =  WTS + 1
+	CODE<WTS> =  ALT
+	S   BC  =				:S(RSELECT_1)
+*
+*	Convert table to array with unique name.  Since CONVERT
+*	creates a 2-dimensional array, there is some wastage here,
+*	as we are only using the second column.
+	RSEL_CTR = RSEL_CTR + 1
+	$('RSEL.' RSEL_CTR) = CONVERT(CODE,"ARRAY")
+*
+*	Build the code string to randomly select an element of the
+*	array, and return to caller.
+	CODE  =  ' RSELECT = RSEL.' RSEL_CTR '<RANDOM(' WTS '),2>'
++		' :(RETURN)'
+	S  =  SSAVED
+*
+*	Compile the code, save it in master table, and restart function.
+	RSEL_TBL<S>  =  CODE(CODE)		:S(RSELECT)F(ERROR)
+RSELECT_END
+
+-EJECT
+* RSENTENCE(STACK)
+*	Generates a random sentence according to the grammar
+*	read from IN_FILE during initialization.
+*
+*	If the argument string contains any syntactic variables, they
+*	are expanded according to the grammar.
+*
+*	Grammar meta-language:
+*	<name>::=alternative1|alt2|alt3|...|altn
+*
+*	Continuation lines begin with a blank in column 1.
+*	Alternatives may be strings, other <name>'s, or one of the following:
+*		=name=	is like <name>, but also assigns the result of its
+*			expansion to the SNOBOL4 variable $name.
+*		(name)	produces EVAL(name).
+*	END in column 1 terminates the grammar.
+*
+*	See "Algorithms in SNOBOL4," pp. 354-359 for a complete description.
+*
+	DEFINE('RSENTENCE(STACK)VAR,EXP,S,TEXT')
+*
+*	Initialization.  Define patterns and table to hold rules from file.
+	SYN.VAR      =  '<'  ARB . VAR  '>'
+	SNOBAL.EXP   =  '(' ARB . EXP ')'
+	ASGN.VAR     =  '='  ARB . VAR  '='
+	LITERAL.TEXT =  BREAK('<=(') . TEXT
+	RSENT_TBL    =  TABLE()
+*
+*	Read file.  Concatenate continuation lines.
+	SS  =  IN_FILE
+RSI_1	S   =  IN_FILE
+	S    ('<' | 'END' RPOS(0))		:S(RSI_2)
+	SS  =  SS S				:(RSI_1)
+*
+*	Here with a complete rule (or "END").  Get name and save rule.
+RSI_2	SS   '<' ARB . NM '>::='  =
+	RSENT_TBL<NM>  =  '|'  SS
+	IDENT(S,'END')				:S(RSENTENCE_END)
+	SS  =  S				:(RSI_1)
+*
+*	Entry point.  If argument begins with <var>, obtain alternatives
+*	string from RSENT_TBL, and use RSELECT to it with an alternative.
+RSENTENCE
+	STACK SYN.VAR = RSELECT(RSENT_TBL<VAR>)	:S(RSENTENCE)
+*
+*	If arg begins with (exp), just EVAL it and add it to output S.
+	STACK   SNOBAL.EXP  =			:F(RSENT_1)
+	S  =  S  EVAL(EXP)			:(RSENTENCE)
+*
+*	If arg begins with =var=, treat like <var>, but save in $var.
+RSENT_1	STACK  ASGN.VAR  =			:F(RSENT_2)
+	$VAR  =  RSENTENCE('<' VAR '>')
+	S  =  S  $VAR				:(RSENTENCE)
+*
+*	Not <var>, (exp), or =var=, must be literal text.  If there is
+*	a syntactic variable beyond, remove text to S, and process variable.
+RSENT_2	STACK   LITERAL.TEXT  =			:F(RSENT_3)
+	S   =   S  TEXT				:(RSENTENCE)
+*
+*	Nothing beyond this text.  Just add it to S, and return result.
+RSENT_3	RSENTENCE  =  S  STACK			:(RETURN)
+RSENTENCE_END	SS =
+
+-EJECT
+*******	MAIN PROGRAM *******
+*
+*	Seed the random number generator with seconds and minutes
+*	 from real-time clock
+	DATE() LEN(12) LEN(2) . MINUTE LEN(1) LEN(2) . SECOND
+	RAN_VAR = REMDR(MINUTE * SECOND, 490) + 1
+*
+*	Expand the syntactic variable <RPOEM>.  Slash indicates end of line.
+LOOP	POEM = RSENTENCE('<RPOEM>')
+*
+*	Break into lines and display
+PRINT	POEM BREAK('/') . OUTPUT '/' =		:S(PRINT)
+	OUTPUT =				:(LOOP)
+END

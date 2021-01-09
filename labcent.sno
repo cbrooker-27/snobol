@@ -1,0 +1,134 @@
+*	LABCENT.SNO
+*
+*	Reads mailing labels from standard input file,
+*	writes them to standard out centered in a W char x H line window,
+*	with F blank lines after each label.
+*
+*	For typical 3-1/2" x 15/16" labels, and 12 pitch type, use:
+*		W = 40, H = 5, F = 1
+*
+*	Set parameters W, H, and F as appropriate, then invoke
+*	the program with:
+*
+*	SNOBOL4 LABCENT <LABEL.IN >LABEL.OUT
+*
+*	Notes:	The input labels are expected to be left justified, as
+*		they would when output from a program like PC-FILE.
+*
+*		They remain left justified in the output, but positioned
+*		so that the longest line is centered on the label.
+*
+*		One or more blank lines must separate individual labels.
+*		There can be any number of blank lines between labels in
+*		the input file; they are discarded.
+*
+*		Labels containing more than H lines are displayed on the
+*		screen, and are not copied to the output.
+*
+*
+*	Format Definitions:
+*
+	W  = 40					;* Label Width
+	H  = 5					;* Max lines in label
+	F  = 1					;* Fill lines between labels
+
+	&trim = 1
+	&anchor = 1
+
+	label = array(H)			;* Array to hold label
+	input(.input,5,W)			;* Set input line width
+
+************************************************************************
+*
+*	Function Definitions
+*
+* READ_LABEL - Read Label from Input file.
+*
+*	number_of_lines = read_label(array)
+*
+*	Skips to first non-blank line, reads label into array argument,
+*	and returns the number of lines read as the function result.
+*
+*	Function fails if end-of-file read before a non-blank line found.
+*
+*	Labels too large for the given array are displayed on the screen,
+*	then ignored.
+*
+	DEFINE('read_label(a)line')		:(read_label_end)
+*	Scan for non-blank line
+read_label read_label = 0
+rl_0	line = input				:f(freturn)
+	DIFFER(line)				:f(rl_0)
+
+*	Count line and store it away
+rl_1	read_label = read_label + 1
+	a[read_label] = line			:f(rl_2)
+
+* Here for subsequent label lines.  Return on EOF or blank line.
+	line = input				:f(return)
+	DIFFER(line)				:s(rl_1) f(return)
+
+* Here if too many lines in label.  Display label.
+rl_2	screen = 
+	read_label = 0
+rl_3	read_label = read_label + 1
+	screen = a[read_label]			:s(rl_3)
+	screen = line				:(read_label)
+read_label_end
+
+
+* SCAN_LABEL - Scan label for longest line.
+*
+*	max_width = scan_label(array,n_lines)
+*
+*	Returns the width of the longest line in an array.
+*
+	DEFINE('scan_label(a,n)i,line')		:(scan_label_end)
+scan_label
+	i = i + 1
+	gt(i,n)					:s(return)
+	scan_label = gt(size(a[i]),scan_label) size(a[i])	:(scan_label)
+scan_label_end
+
+
+* WRITE_LABEL - Write out centered label.
+*
+*	write_label(array, n_lines, before, after, margin)
+*
+*
+	DEFINE('write_label(a,n,before,after,margin)i')
+	crlf = char(13) char(10)		;* Carriage return/line feed
+						:(write_label_end)
+write_label
+* Put out preceeding blank lines.
+	output = ge(before, 1) dupl(crlf,before - 1)
+
+* Put out label.
+	i = 1
+wl_1	output = dupl(' ',margin) a[i]
+	i = lt(i,n) i + 1			:s(wl_1)
+
+* Put out lines following label.
+	output = ge(after, 1) dupl(crlf,after - 1)	:(return)
+write_label_end
+
+
+************************************************************************
+*
+* Main Loop.  Get and print a label.
+*
+* Read label
+main	n_lines = read_label(label)		:f(end)
+
+* Get width of longest line
+	max	= scan_label(label,n_lines)
+
+* Compute spacing parameters around label.
+	after = (H - n_lines) / 2
+	before = H - n_lines - after
+	margin = (W - max) / 2
+
+* Write centered label
+	write_label(label,n_lines,before,after + F,margin)	:(main)
+
+end

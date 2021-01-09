@@ -1,0 +1,100 @@
+*	CODE.SNO
+*
+*	Program to allow entering test SNOBOL4 statements.
+*	Labels S and F are provided as convenient branch points.
+*	Function SLOAD is also included, to allow dynamically loading
+*	other SNOBOL4 functions.
+*
+*	Uses Units 15 and 16 for KEYBOARD and SLOAD.
+*
+*	User dialog is independent of INPUT and OUTPUT variables.  They
+*	are defaulted to CON:, but may be redirected from the DOS command
+*	line:
+*		A>SNOBOL4 CODE <INFILE >OUTFILE
+*
+*
+*	To avoid having to type the full line:
+*
+*	?	SCREEN = <some expression>
+*
+*	CODE.SNO provides the following shorthand notations:
+*
+*	?=expression
+*
+*	which internally expands to SCREEN = EVAL(expression)
+*
+*	(c) Copyright 1985, 1987 - Catspaw, Incorporated
+
+	&TRIM = 1
+	SCREEN = 'Enter SNOBOL4 statements:'
+	INPUT('KEYBOARD', 15, 255, 'CON:')
+
+	DEFINE('SLOAD(FILENAME)LIB,CODE,X,MAX_SAV,TRIM_SAV,POSITION')
+	WHITE_SPACE_	=	CHAR(9) ' '
+
+	Q_	    =	"'"
+	QQ_	    =	'"'
+
+*	Patterns to assist the SLOAD function.
+	SLOAD_STMT  =	ARBNO(Q_ BREAK(Q_) Q_ | QQ_ BREAK(QQ_) QQ_ |
++			  NOTANY(Q_ QQ_) BREAK(Q_ QQ_ ';')) ';'
+	SLOAD_STMTS =	FENCE (';' ARBNO(SLOAD_STMT)) . X '*' REM
+	SLOAD_CCPAT =	FENCE ('*' | '-' | RPOS(0))
+	SLOAD_CNPAT =	FENCE (';.' | ';+')
+
+*	Trap and report conditionally fatal execution errors in user's code
+	&TRACE = 1000
+	&ERRLIMIT = 1000
+	DEFINE('ERRFUN_()')
+	TRACE('ERRTYPE','KEYWORD',,'ERRFUN_')
+
+NEWLIN_ SCREEN = '?' CHAR(26)
+	INPT_  = KEYBOARD			:F(END)
+	INPT_ FENCE '=' REM . CODE		:S(EVAL_)
+
+*	Compile statement with Goto appended and execute it
+	CODE   = CODE(INPT_ ' :S(S) F(F)')	:S<CODE>
+	SCREEN = 'Compilation error: ' &ERRTEXT ', reenter:' :(NEWLIN_)
+
+S	SCREEN = 'Success'			:(NEWLIN_)
+F	SCREEN = 'Failure'			:(NEWLIN_)
+EVAL_	SCREEN = EVAL(CODE)			:S(S)F(F)
+
+ERRFUN_	SCREEN = 'Execution error #' &ERRTYPE ', ' &ERRTEXT	:(RETURN)
+
+
+*	Function to read and compile SNOBOL4 functions from a disk file.
+*	The filename is specified as the argument to function SLOAD.
+
+SLOAD	FILENAME  = TRIM(REPLACE(FILENAME,&LCASE,&UCASE))
+	INPUT(.LIB, 16, 120, FILENAME)		:S(SLOAD_0)F(FRETURN)
+SLOAD_0	MAX_SAV   =	&MAXLNGTH
+	TRIM_SAV  =	&TRIM
+	&MAXLNGTH =	32767
+	&TRIM     =	1
+
+*	Read file, discarding control and comment lines
+SLOAD_1	X	  =	LIB			:F(SLOAD_2)
+	X SLOAD_CCPAT				:S(SLOAD_1)
+	X	  =	';' X
+	X SLOAD_CNPAT =	' '
+	X SLOAD_STMTS
+	CODE	  =	CODE X			:(SLOAD_1)
+
+SLOAD_2	ENDFILE(16)
+	CODE	  =	CODE(CODE '; :(SLOAD_3)')	:S<CODE>
+	SCREEN	  =	'Compilation error, file: ' FILENAME
+
+* Error. Take CODE apart statement by statement to find the problem.
+* Remove initial ';'
+	CODE LEN(1) REM . CODE
+SLOAD_6	CODE FENCE SLOAD_STMT . X =		:F(SLOAD_7)
+	CODE(X)					:S(SLOAD_6)
+	X RTAB(1) . SCREEN
+SLOAD_7	&MAXLNGTH =	MAX_SAV
+	&TRIM	  =	TRIM_SAV
+	SCREEN	  =	&ERRTEXT		:(FRETURN)
+
+SLOAD_3	&MAXLNGTH =	MAX_SAV
+	&TRIM	  =	TRIM_SAV		:(RETURN)
+END
